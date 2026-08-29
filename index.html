@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Training Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0c08;
+    --surface:#141710;
+    --surface-hi:#1c2016;
+    --border:#262b1e;
+    --milk:#cdf0bd;
+    --milk-dim:#8fae7f;
+    --text:#f1f4ea;
+    --text-dim:#9aa48e;
+    --rest:#e8ece0;
+    --push:#ff6b5e;
+    --pull:#4e9eff;
+    --legs:#8fd14f;
+    --cardio:#f0b429;
+    --upper:#c084fc;
+    --lower:#ff9f45;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(205,240,189,0.05), transparent 45%),
+      radial-gradient(circle at 85% 100%, rgba(205,240,189,0.04), transparent 40%);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    padding:32px 18px 80px;
+  }
+  .wrap{max-width:640px; margin:0 auto;}
+
+  header{margin-bottom:36px;}
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.18em;
+    color:var(--milk-dim);
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:clamp(30px, 8vw, 42px);
+    line-height:1.05;
+    letter-spacing:-0.01em;
+  }
+  h1 span{color:var(--milk);}
+  .sub{
+    margin-top:12px;
+    color:var(--text-dim);
+    font-size:14.5px;
+    line-height:1.5;
+    max-width:46ch;
+  }
+  .rules-btn{
+    margin-top:18px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--milk);
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.04em;
+    padding:9px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:border-color .2s, background .2s;
+  }
+  .rules-btn:hover{border-color:var(--milk-dim); background:var(--surface);}
+
+  /* timeline */
+  .timeline{position:relative; padding-left:26px;}
+  .timeline::before{
+    content:"";
+    position:absolute;
+    left:8px; top:10px; bottom:10px;
+    width:1px;
+    background:linear-gradient(var(--border), var(--border) 90%, transparent);
+  }
+
+  .day{
+    position:relative;
+    margin-bottom:14px;
+  }
+  .dot{
+    position:absolute;
+    left:-26px; top:22px;
+    width:15px; height:15px;
+    border-radius:50%;
+    border:2px solid var(--bg);
+    box-shadow:0 0 0 1px var(--border);
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    transition:border-color .25s;
+  }
+  .card.open{border-color:var(--milk-dim);}
+
+  .card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:16px 18px;
+  }
+  .card-head-left{min-width:0;}
+  .day-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin-bottom:4px;
+  }
+  .day-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:19px;
+    letter-spacing:-0.01em;
+  }
+  .day-muscles{
+    font-size:12.5px;
+    color:var(--text-dim);
+    margin-top:3px;
+  }
+
+  .view-btn{
+    flex-shrink:0;
+    background:var(--milk);
+    color:#0a0c08;
+    border:none;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:600;
+    font-size:12px;
+    letter-spacing:0.03em;
+    padding:9px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:transform .15s, opacity .15s;
+  }
+  .view-btn:hover{opacity:.88;}
+  .view-btn:active{transform:scale(0.96);}
+  .view-btn.is-rest{background:transparent; color:var(--milk); border:1px solid var(--milk-dim);}
+
+  .card-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .35s ease;
+  }
+  .card-body-inner{
+    padding:2px 18px 20px;
+    border-top:1px solid var(--border);
+  }
+
+  table{width:100%; border-collapse:collapse; margin-top:14px;}
+  th{
+    text-align:left;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--milk-dim);
+    padding-bottom:8px;
+    border-bottom:1px solid var(--border);
+  }
+  td{
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+    font-size:14px;
+  }
+  td:last-child, th:last-child{
+    text-align:right;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--milk);
+    white-space:nowrap;
+    padding-left:10px;
+  }
+  tr:last-child td{border-bottom:none;}
+
+  .note{
+    margin-top:16px;
+    font-size:13px;
+    line-height:1.6;
+    color:var(--text-dim);
+    background:var(--surface-hi);
+    border-left:2px solid var(--milk-dim);
+    padding:10px 12px;
+    border-radius:6px;
+  }
+  .note b{color:var(--text);}
+
+  .rest-list{list-style:none; margin-top:14px;}
+  .rest-list li{
+    font-size:14px;
+    padding:9px 0;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .rest-list li:last-child{border-bottom:none;}
+  .rest-list li::before{content:"—"; color:var(--milk-dim);}
+
+  .sublabel{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--milk);
+    margin:16px 0 6px;
+  }
+  .sublabel:first-of-type{margin-top:14px;}
+
+  footer{
+    text-align:center;
+    margin-top:40px;
+    font-size:11.5px;
+    color:var(--text-dim);
+    font-family:'JetBrains Mono', monospace;
+    letter-spacing:0.03em;
+  }
+
+  /* modal */
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(5,6,4,0.72);
+    backdrop-filter:blur(2px);
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    z-index:50;
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:18px 18px 0 0;
+    width:100%;
+    max-width:640px;
+    max-height:80vh;
+    overflow-y:auto;
+    padding:22px 20px 30px;
+    animation:slideup .25s ease;
+  }
+  @keyframes slideup{from{transform:translateY(24px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+  .modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;}
+  .modal h2{font-family:'Space Grotesk', sans-serif; font-size:20px;}
+  .close-btn{
+    background:none; border:1px solid var(--border); color:var(--text-dim);
+    width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:15px;
+  }
+  .rule-row{
+    display:flex; justify-content:space-between; gap:14px;
+    padding:11px 0; border-bottom:1px solid var(--border); font-size:13.5px;
+  }
+  .rule-row:last-of-type{border-bottom:none;}
+  .rule-row b{color:var(--milk); font-weight:600;}
+  .rule-row span:last-child{
+    font-family:'JetBrains Mono', monospace; color:var(--text); text-align:right; flex-shrink:0;
+  }
+  .rule-note{margin-top:16px; font-size:13px; color:var(--text-dim); line-height:1.6;}
+
+  @media (prefers-reduced-motion: reduce){
+    .card-body, .view-btn, .modal{transition:none; animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Mon → Sun · Training Cycle</div>
+    <h1>Your <span>week</span>,<br>logged.</h1>
+    <p class="sub">Monday's your day off from work, so it stays a full rest day. The training days run Tuesday through Sunday, matching your work schedule. Tap "View" on any day to see the exercises.</p>
+    <button class="rules-btn" onclick="document.getElementById('rulesOverlay').classList.add('show')">✦ General rules</button>
+  </header>
+
+  <div class="timeline" id="timeline"></div>
+
+  <footer>7-DAY CYCLE · TECHNIQUE BEFORE LOAD</footer>
+</div>
+
+<!-- General Rules Modal -->
+<div class="overlay" id="rulesOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>General rules</h2>
+      <button class="close-btn" onclick="document.getElementById('rulesOverlay').classList.remove('show')">✕</button>
+    </div>
+    <div class="rule-row"><b>Warm-up</b><span>8–10 min before every resistance workout</span></div>
+    <div class="rule-row"><b>Compound exercises</b><span>3 sets × 6–10 reps</span></div>
+    <div class="rule-row"><b>Isolation exercises</b><span>3 sets × 10–15 reps</span></div>
+    <div class="rule-row"><b>Abs</b><span>3 sets × 10–20 reps / 30–45 sec</span></div>
+    <div class="rule-row"><b>Compound rest</b><span>2–3 min</span></div>
+    <div class="rule-row"><b>Isolation rest</b><span>60–90 sec</span></div>
+    <p class="rule-note">Record your <b style="color:var(--text)">exercise, weight, reps and sets</b> every workout. Increase weight only when you can perform the upper end of the rep range with good form.</p>
+  </div>
+</div>
+
+<script>
+const days = [
+  {
+    day:"Monday", color:"var(--rest)", label:"Day off", title:"Complete Rest",
+    muscles:"No heavy training", isRest:true,
+    restList:["Walk casually","Do light stretching","Recover","Sleep properly","Prepare for the week ahead"]
+  },
+  {
+    day:"Tuesday", color:"var(--push)", label:"Push + Abs", title:"Chest, Shoulders & Triceps",
+    muscles:"Chest + Shoulders + Triceps",
+    rows:[
+      ["Bench Press / Dumbbell Bench Press","3 × 6–10"],
+      ["Incline Dumbbell Press","3 × 8–12"],
+      ["Seated Dumbbell Shoulder Press","3 × 8–12"],
+      ["Cable/Dumbbell Lateral Raise","3 × 10–15"],
+      ["Triceps Pushdown","3 × 10–15"],
+      ["Overhead Triceps Extension","2–3 × 10–15"],
+      ["Plank","3 × 30–45 sec"]
+    ],
+    note:"<b>Focus:</b> controlled movement and proper technique."
+  },
+  {
+    day:"Wednesday", color:"var(--pull)", label:"Pull", title:"Back, Rear Delts & Biceps",
+    muscles:"Back + Rear Delts + Biceps",
+    rows:[
+      ["Lat Pulldown","3 × 8–12"],
+      ["Seated Cable Row","3 × 8–12"],
+      ["Single-Arm Dumbbell Row","3 × 8–12 each"],
+      ["Face Pull / Reverse Fly","3 × 10–15"],
+      ["Dumbbell/Cable Biceps Curl","3 × 10–15"],
+      ["Hammer Curl","2–3 × 10–15"]
+    ],
+    note:"<b>Focus:</b> don't rush the eccentric/returning phase. Control the weight."
+  },
+  {
+    day:"Thursday", color:"var(--legs)", label:"Legs + Abs", title:"Quads, Hamstrings & Glutes",
+    muscles:"Quads + Hamstrings + Glutes + Calves",
+    rows:[
+      ["Back Squat / Goblet Squat","3 × 6–10"],
+      ["Romanian Deadlift","3 × 8–12"],
+      ["Leg Press","3 × 8–12"],
+      ["Bulgarian Split Squat","2–3 × 8–12 each"],
+      ["Leg Curl","3 × 10–15"],
+      ["Calf Raise","3 × 10–15"],
+      ["Crunch","3 × 10–20"]
+    ],
+    note:"<b>Important:</b> you don't need to make every leg exercise extremely heavy. Technique comes first."
+  },
+  {
+    day:"Friday", color:"var(--cardio)", label:"Cardio + Mobility", title:"Recovery-Focused Day",
+    muscles:"Not another hard strength session",
+    isMobility:true,
+    cardio:"Incline walking — 20–30 minutes. Keep the intensity moderate — you should be able to speak in short sentences.",
+    mobilityGroups:[
+      ["Hips",["90/90 hip rotations","Hip circles"]],
+      ["Ankles",["Knee-to-wall ankle mobility"]],
+      ["Thoracic spine",["Thoracic rotations"]],
+      ["Shoulders",["Arm circles","Shoulder rotations"]],
+      ["Hamstrings",["Dynamic hamstring stretch"]],
+      ["Hip flexors",["Half-kneeling hip-flexor stretch"]]
+    ],
+    note:"👉 Mobility should be <b>controlled</b>, not painful."
+  },
+  {
+    day:"Saturday", color:"var(--upper)", label:"Upper", title:"Upper-Body Strength",
+    muscles:"Second stimulus for the upper body",
+    rows:[
+      ["Bench Press / Chest Press","3 × 6–10"],
+      ["Lat Pulldown / Assisted Pull-up","3 × 8–12"],
+      ["Seated Cable Row","3 × 8–12"],
+      ["Dumbbell Shoulder Press","3 × 8–12"],
+      ["Lateral Raise","3 × 10–15"],
+      ["Biceps Curl","2–3 × 10–15"],
+      ["Triceps Pushdown","2–3 × 10–15"]
+    ],
+    note:"This gives your upper body a <b>second training stimulus</b> during the week."
+  },
+  {
+    day:"Sunday", color:"var(--lower)", label:"Lower + Abs", title:"Glutes, Hamstrings & Quads",
+    muscles:"Glutes + Hamstrings + Quads + Calves",
+    rows:[
+      ["Trap-Bar Deadlift / Deadlift","3 × 5–8"],
+      ["Hip Thrust","3 × 8–12"],
+      ["Front Squat / Goblet Squat","3 × 8–12"],
+      ["Walking Lunges","2–3 × 8–12 each"],
+      ["Leg Curl","3 × 10–15"],
+      ["Calf Raise","3 × 10–15"],
+      ["Hanging Knee Raise","3 × 10–15"]
+    ]
+  }
+];
+
+const timeline = document.getElementById('timeline');
+
+days.forEach((d, i) => {
+  const dayEl = document.createElement('div');
+  dayEl.className = 'day';
+
+  let bodyContent = '';
+  if(d.isRest){
+    bodyContent = `<ul class="rest-list">${d.restList.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  } else if(d.isMobility){
+    bodyContent = `
+      <div class="sublabel">Cardio</div>
+      <p style="font-size:14px; line-height:1.6; color:var(--text);">${d.cardio}</p>
+      <div class="sublabel">Mobility — 10–15 min</div>
+      ${d.mobilityGroups.map(g => `
+        <p style="font-size:13px; color:var(--milk-dim); margin-top:10px; font-weight:600;">${g[0]}</p>
+        <ul class="rest-list">${g[1].map(x=>`<li>${x}</li>`).join('')}</ul>
+      `).join('')}
+      <div class="note">${d.note}</div>
+    `;
+  } else {
+    bodyContent = `
+      <table>
+        <tr><th>Exercise</th><th>Sets × Reps</th></tr>
+        ${d.rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}
+      </table>
+      ${d.note ? `<div class="note">${d.note}</div>` : ''}
+    `;
+  }
+
+  dayEl.innerHTML = `
+    <div class="dot" style="background:${d.color}"></div>
+    <div class="card" id="card-${i}">
+      <div class="card-head">
+        <div class="card-head-left">
+          <div class="day-label">${d.day} · ${d.label}</div>
+          <div class="day-title">${d.title}</div>
+          <div class="day-muscles">${d.muscles}</div>
+        </div>
+        <button class="view-btn ${d.isRest ? 'is-rest' : ''}" onclick="toggleCard(${i})">View</button>
+      </div>
+      <div class="card-body" id="body-${i}">
+        <div class="card-body-inner">${bodyContent}</div>
+      </div>
+    </div>
+  `;
+  timeline.appendChild(dayEl);
+});
+
+function toggleCard(i){
+  const card = document.getElementById(`card-${i}`);
+  const body = document.getElementById(`body-${i}`);
+  const btn = card.querySelector('.view-btn');
+  const isOpen = card.classList.contains('open');
+
+  if(isOpen){
+    body.style.maxHeight = null;
+    card.classList.remove('open');
+    btn.textContent = 'View';
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    card.classList.add('open');
+    btn.textContent = 'Hide';
+  }
+}
+
+document.getElementById('rulesOverlay').addEventListener('click', (e) => {
+  if(e.target.id === 'rulesOverlay') e.target.classList.remove('show');
+});
+</script>
+
+</body>
+</html>
