@@ -3,477 +3,1306 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Weekly Training Log</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Training Plan</title>
 <style>
-  :root{
-    --bg:#0a0c08;
-    --surface:#141710;
-    --surface-hi:#1c2016;
-    --border:#262b1e;
-    --milk:#cdf0bd;
-    --milk-dim:#8fae7f;
-    --text:#f1f4ea;
-    --text-dim:#9aa48e;
-    --rest:#e8ece0;
-    --push:#ff6b5e;
-    --pull:#4e9eff;
-    --legs:#8fd14f;
-    --cardio:#f0b429;
-    --upper:#c084fc;
-    --lower:#ff9f45;
+  :root {
+    --bg: #0a0a0a;
+    --card: #111111;
+    --card-hover: #161616;
+    --border: #1e1e1e;
+    --accent: #4f8ef7;
+    --accent-dim: rgba(79,142,247,0.12);
+    --text: #f0f0f0;
+    --text-muted: #6b6b6b;
+    --text-secondary: #9a9a9a;
+    --leave: #1a1a1a;
+    --rest: #0f0f0f;
   }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  body{
-    background:var(--bg);
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-link {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero-wrapper {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .hero-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
     background-image:
-      radial-gradient(circle at 15% 0%, rgba(205,240,189,0.05), transparent 45%),
-      radial-gradient(circle at 85% 100%, rgba(205,240,189,0.04), transparent 40%);
-    color:var(--text);
-    font-family:'Inter', sans-serif;
-    min-height:100vh;
-    padding:32px 18px 80px;
-  }
-  .wrap{max-width:640px; margin:0 auto;}
-
-  header{margin-bottom:36px;}
-  .eyebrow{
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    letter-spacing:0.18em;
-    color:var(--milk-dim);
-    text-transform:uppercase;
-    margin-bottom:10px;
-  }
-  h1{
-    font-family:'Space Grotesk', sans-serif;
-    font-weight:700;
-    font-size:clamp(30px, 8vw, 42px);
-    line-height:1.05;
-    letter-spacing:-0.01em;
-  }
-  h1 span{color:var(--milk);}
-  .sub{
-    margin-top:12px;
-    color:var(--text-dim);
-    font-size:14.5px;
-    line-height:1.5;
-    max-width:46ch;
-  }
-  .rules-btn{
-    margin-top:18px;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    background:transparent;
-    border:1px solid var(--border);
-    color:var(--milk);
-    font-family:'JetBrains Mono', monospace;
-    font-size:12px;
-    letter-spacing:0.04em;
-    padding:9px 14px;
-    border-radius:8px;
-    cursor:pointer;
-    transition:border-color .2s, background .2s;
-  }
-  .rules-btn:hover{border-color:var(--milk-dim); background:var(--surface);}
-
-  /* timeline */
-  .timeline{position:relative; padding-left:26px;}
-  .timeline::before{
-    content:"";
-    position:absolute;
-    left:8px; top:10px; bottom:10px;
-    width:1px;
-    background:linear-gradient(var(--border), var(--border) 90%, transparent);
+      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
   }
 
-  .day{
-    position:relative;
-    margin-bottom:14px;
-  }
-  .dot{
-    position:absolute;
-    left:-26px; top:22px;
-    width:15px; height:15px;
-    border-radius:50%;
-    border:2px solid var(--bg);
-    box-shadow:0 0 0 1px var(--border);
-  }
-  .card{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:14px;
-    overflow:hidden;
-    transition:border-color .25s;
-  }
-  .card.open{border-color:var(--milk-dim);}
-
-  .card-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    padding:16px 18px;
-  }
-  .card-head-left{min-width:0;}
-  .day-label{
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:var(--text-dim);
-    margin-bottom:4px;
-  }
-  .day-title{
-    font-family:'Space Grotesk', sans-serif;
-    font-weight:700;
-    font-size:19px;
-    letter-spacing:-0.01em;
-  }
-  .day-muscles{
-    font-size:12.5px;
-    color:var(--text-dim);
-    margin-top:3px;
+  /* Fade the grid out toward the bottom */
+  .hero-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 40%,
+      var(--bg) 100%
+    );
+    pointer-events: none;
   }
 
-  .view-btn{
-    flex-shrink:0;
-    background:var(--milk);
-    color:#0a0c08;
-    border:none;
-    font-family:'JetBrains Mono', monospace;
-    font-weight:600;
-    font-size:12px;
-    letter-spacing:0.03em;
-    padding:9px 14px;
-    border-radius:8px;
-    cursor:pointer;
-    transition:transform .15s, opacity .15s;
-  }
-  .view-btn:hover{opacity:.88;}
-  .view-btn:active{transform:scale(0.96);}
-  .view-btn.is-rest{background:transparent; color:var(--milk); border:1px solid var(--milk-dim);}
-
-  .card-body{
-    max-height:0;
-    overflow:hidden;
-    transition:max-height .35s ease;
-  }
-  .card-body-inner{
-    padding:2px 18px 20px;
-    border-top:1px solid var(--border);
+  .hero {
+    position: relative;
+    z-index: 1;
+    padding: 80px 24px 96px;
+    max-width: 600px;
+    margin: 0 auto;
   }
 
-  table{width:100%; border-collapse:collapse; margin-top:14px;}
-  th{
-    text-align:left;
-    font-family:'JetBrains Mono', monospace;
-    font-size:10.5px;
-    letter-spacing:0.1em;
-    text-transform:uppercase;
-    color:var(--milk-dim);
-    padding-bottom:8px;
-    border-bottom:1px solid var(--border);
-  }
-  td{
-    padding:10px 0;
-    border-bottom:1px solid var(--border);
-    font-size:14px;
-  }
-  td:last-child, th:last-child{
-    text-align:right;
-    font-family:'JetBrains Mono', monospace;
-    font-size:13px;
-    color:var(--milk);
-    white-space:nowrap;
-    padding-left:10px;
-  }
-  tr:last-child td{border-bottom:none;}
-
-  .note{
-    margin-top:16px;
-    font-size:13px;
-    line-height:1.6;
-    color:var(--text-dim);
-    background:var(--surface-hi);
-    border-left:2px solid var(--milk-dim);
-    padding:10px 12px;
-    border-radius:6px;
-  }
-  .note b{color:var(--text);}
-
-  .rest-list{list-style:none; margin-top:14px;}
-  .rest-list li{
-    font-size:14px;
-    padding:9px 0;
-    border-bottom:1px solid var(--border);
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-  .rest-list li:last-child{border-bottom:none;}
-  .rest-list li::before{content:"—"; color:var(--milk-dim);}
-
-  .sublabel{
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    letter-spacing:0.1em;
-    text-transform:uppercase;
-    color:var(--milk);
-    margin:16px 0 6px;
-  }
-  .sublabel:first-of-type{margin-top:14px;}
-
-  footer{
-    text-align:center;
-    margin-top:40px;
-    font-size:11.5px;
-    color:var(--text-dim);
-    font-family:'JetBrains Mono', monospace;
-    letter-spacing:0.03em;
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
-  /* modal */
-  .overlay{
-    position:fixed; inset:0;
-    background:rgba(5,6,4,0.72);
-    backdrop-filter:blur(2px);
-    display:none;
-    align-items:flex-end;
-    justify-content:center;
-    z-index:50;
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
   }
-  .overlay.show{display:flex;}
-  .modal{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:18px 18px 0 0;
-    width:100%;
-    max-width:640px;
-    max-height:80vh;
-    overflow-y:auto;
-    padding:22px 20px 30px;
-    animation:slideup .25s ease;
-  }
-  @keyframes slideup{from{transform:translateY(24px); opacity:0;} to{transform:translateY(0); opacity:1;}}
-  .modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;}
-  .modal h2{font-family:'Space Grotesk', sans-serif; font-size:20px;}
-  .close-btn{
-    background:none; border:1px solid var(--border); color:var(--text-dim);
-    width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:15px;
-  }
-  .rule-row{
-    display:flex; justify-content:space-between; gap:14px;
-    padding:11px 0; border-bottom:1px solid var(--border); font-size:13.5px;
-  }
-  .rule-row:last-of-type{border-bottom:none;}
-  .rule-row b{color:var(--milk); font-weight:600;}
-  .rule-row span:last-child{
-    font-family:'JetBrains Mono', monospace; color:var(--text); text-align:right; flex-shrink:0;
-  }
-  .rule-note{margin-top:16px; font-size:13px; color:var(--text-dim); line-height:1.6;}
 
-  @media (prefers-reduced-motion: reduce){
-    .card-body, .view-btn, .modal{transition:none; animation:none;}
+  .hero h1 {
+    font-size: clamp(36px, 9vw, 64px);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .hero p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 36px;
+    max-width: 440px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: #0a0a0a;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* SECTION */
+  .section {
+    padding: 0 24px 80px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* CARDS */
+  .cards { display: flex; flex-direction: column; gap: 12px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 22px 18px;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    cursor: default;
+  }
+
+  .card.clickable {
+    cursor: pointer;
+  }
+
+  .card.clickable:hover {
+    background: var(--card-hover);
+    border-color: #2a2a2a;
+    transform: translateY(-2px);
+  }
+
+  .card-day {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .card-title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .card-muscles {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  .card-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 16px;
+  }
+
+  .btn-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-view:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .btn-view svg { width: 12px; height: 12px; }
+
+  /* Leave / Rest cards */
+  .card-leave {
+    background: var(--leave);
+    opacity: 0.7;
+  }
+
+  .card-leave .card-title { color: var(--text-secondary); font-size: 16px; }
+
+  .card-rest {
+    background: var(--rest);
+    border-style: dashed;
+    opacity: 0.6;
+  }
+
+  .card-rest .card-title { color: var(--text-muted); font-size: 16px; }
+
+  .tag {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .tag-leave { background: #1e1e1e; color: var(--text-muted); }
+  .tag-rest { background: #151515; color: #444; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(40px);
+    transition: transform 0.3s cubic-bezier(0.34, 1.3, 0.64, 1);
+  }
+
+  @media (min-width: 600px) {
+    .modal-overlay { align-items: center; }
+    .modal {
+      border-radius: 20px;
+      max-height: 85vh;
+      margin: 16px;
+    }
+  }
+
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-handle {
+    width: 36px;
+    height: 4px;
+    background: #2a2a2a;
+    border-radius: 99px;
+    margin: 14px auto 0;
+  }
+
+  @media (min-width: 600px) { .modal-handle { display: none; } }
+
+  .modal-header {
+    padding: 20px 22px 16px;
+    position: sticky;
+    top: 0;
+    background: #111;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .modal-header-info {}
+
+  .modal-day-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .modal-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  .modal-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .modal-close {
+    background: #1e1e1e;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 4px;
+    transition: background 0.2s;
+  }
+
+  .modal-close:hover { background: #2a2a2a; color: var(--text); }
+
+  .modal-body { padding: 0 22px 32px; }
+
+  /* Section headers inside modal */
+  .modal-section-head {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 20px 0 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  /* Exercise row */
+  .exercise-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .exercise-info {}
+
+  .exercise-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .exercise-sets {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .btn-video {
+    background: var(--accent-dim);
+    border: 1px solid rgba(184,212,168,0.2);
+    color: var(--accent);
+    padding: 7px 12px;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .btn-video:hover { background: rgba(184,212,168,0.2); }
+
+  /* Focus note */
+  .focus-note {
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: #0f0f0f;
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .focus-note strong { color: var(--accent); }
+
+  /* Cardio / mobility items */
+  .info-block { padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .info-block-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .info-block-sub { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+
+  .mobility-group { padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .mobility-group-name {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .mobility-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    gap: 12px;
+  }
+
+  .mobility-item-name { font-size: 13px; color: var(--text); }
+
+  /* Sunday bullets */
+  .rest-list { list-style: none; padding: 12px 0; }
+  .rest-list li {
+    font-size: 14px;
+    color: var(--text-secondary);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .rest-list li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* VIDEO MODAL */
+  .video-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    padding: 16px;
+  }
+
+  .video-modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .video-modal {
+    width: 100%;
+    max-width: 560px;
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transform: scale(0.95);
+    transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+
+  .video-modal-overlay.open .video-modal { transform: scale(1); }
+
+  .video-modal-header {
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .video-modal-title { font-size: 14px; font-weight: 600; color: var(--text); }
+
+  .video-close {
+    background: #1e1e1e;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .video-close:hover { background: #2a2a2a; color: var(--text); }
+
+  .video-placeholder {
+    aspect-ratio: 16/9;
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .video-placeholder-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    border: 1px solid rgba(184,212,168,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .video-placeholder-icon svg { color: var(--accent); width: 22px; height: 22px; }
+
+  .video-placeholder p {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 200px;
+    line-height: 1.5;
+  }
+
+  .video-url-note {
+    padding: 12px 18px;
+    font-size: 11px;
+    color: #3a3a3a;
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+
+  /* iframe for real video */
+  .video-iframe {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border: none;
+    display: block;
+  }
+
+  /* ============================================================
+     RESPONSIVE BREAKPOINTS
+  ============================================================ */
+
+  /* Tablet — 640px+ */
+  @media (min-width: 640px) {
+    nav {
+      padding: 0 40px;
+      height: 60px;
+    }
+
+    .hero {
+      padding: 100px 40px 110px;
+      max-width: 720px;
+    }
+
+    .hero-wrapper::before {
+      background-size: 70px 70px;
+    }
+
+    .hero h1 {
+      font-size: clamp(48px, 7vw, 72px);
+    }
+
+    .hero p {
+      font-size: 17px;
+      max-width: 480px;
+    }
+
+    .section {
+      padding: 0 40px 100px;
+      max-width: 720px;
+    }
+
+    .card {
+      padding: 26px 26px 22px;
+    }
+
+    .card-title { font-size: 22px; }
+
+    .modal {
+      border-radius: 20px;
+      max-height: 82vh;
+      margin: 24px;
+    }
+
+    .modal-overlay {
+      align-items: center;
+    }
+
+    .modal-handle { display: none; }
+
+    .video-modal {
+      max-width: 640px;
+    }
+  }
+
+  /* Desktop — 1024px+ */
+  @media (min-width: 1024px) {
+    nav {
+      padding: 0 60px;
+      height: 64px;
+    }
+
+    .logo { font-size: 14px; }
+    .nav-link { font-size: 13px; }
+
+    .hero {
+      padding: 120px 60px 130px;
+      max-width: 1100px;
+    }
+
+    .hero h1 {
+      font-size: clamp(56px, 5.5vw, 88px);
+    }
+
+    .hero p {
+      font-size: 18px;
+      max-width: 520px;
+    }
+
+    .btn-primary {
+      padding: 16px 28px;
+      font-size: 13px;
+    }
+
+    .section {
+      padding: 0 60px 120px;
+      max-width: 1100px;
+    }
+
+    /* 2-column card grid on desktop */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    /* Monday (leave) spans full width */
+    .cards .card:first-child {
+      grid-column: 1 / -1;
+    }
+
+    /* Sunday (rest) spans full width */
+    .cards .card:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .card {
+      padding: 28px 28px 24px;
+    }
+
+    .card-title { font-size: 24px; }
+    .card-muscles { font-size: 14px; }
+
+    .btn-view {
+      padding: 10px 18px;
+      font-size: 12px;
+    }
+
+    /* Modal centered, narrower on large screens */
+    .modal {
+      max-width: 560px;
+      max-height: 80vh;
+      margin: 0;
+    }
+
+    .modal-overlay {
+      align-items: center;
+    }
+
+    .modal-header { padding: 24px 28px 18px; }
+    .modal-body { padding: 0 28px 36px; }
+
+    .modal-title { font-size: 26px; }
+
+    .exercise-name { font-size: 15px; }
+    .exercise-sets { font-size: 13px; }
+
+    .video-modal { max-width: 700px; }
+  }
+
+  /* Large desktop — 1280px+ */
+  @media (min-width: 1280px) {
+    .hero {
+      padding: 140px 80px 150px;
+      max-width: 1200px;
+    }
+
+    .section {
+      padding: 0 80px 140px;
+      max-width: 1200px;
+    }
+
+    nav { padding: 0 80px; }
+
+    .cards { gap: 16px; }
   }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <header>
-    <div class="eyebrow">Mon → Sun · Training Cycle</div>
-    <h1>Your <span>week</span>,<br>logged.</h1>
-    <p class="sub">Monday's your day off from work, so it stays a full rest day. The training days run Tuesday through Sunday, matching your work schedule. Tap "View" on any day to see the exercises.</p>
-    <button class="rules-btn" onclick="document.getElementById('rulesOverlay').classList.add('show')">✦ General rules</button>
-  </header>
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <img src="logo.png" alt="Logo" id="site-logo" style="height:32px;width:auto;display:block;border-radius:4px;" />
+  </div>
+  <a href="#workout-plan" class="nav-link">Workout Plan</a>
+</nav>
 
-  <div class="timeline" id="timeline"></div>
-
-  <footer>7-DAY CYCLE · TECHNIQUE BEFORE LOAD</footer>
+<!-- HERO -->
+<div class="hero-wrapper">
+<section class="hero">
+  <div class="hero-eyebrow">Weekly Training Program</div>
+  <h1>BUILD YOUR<br><em>STRENGTH.</em></h1>
+  <p>A structured weekly strength-training plan designed to build strength, improve movement, and develop a stronger body.</p>
+  <a href="#workout-plan" class="btn-primary">
+    View Workout Plan
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </a>
+</section>
 </div>
 
-<!-- General Rules Modal -->
-<div class="overlay" id="rulesOverlay">
+<!-- WORKOUT PLAN -->
+<section id="workout-plan" class="section">
+  <div class="section-label">Weekly Schedule</div>
+  <div class="cards" id="cards-container"></div>
+</section>
+
+<!-- WORKOUT MODAL -->
+<div class="modal-overlay" id="workout-modal" onclick="closeWorkoutModal(event)">
   <div class="modal">
-    <div class="modal-head">
-      <h2>General rules</h2>
-      <button class="close-btn" onclick="document.getElementById('rulesOverlay').classList.remove('show')">✕</button>
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-day-label" id="modal-day-label"></div>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-subtitle" id="modal-subtitle"></div>
+      </div>
+      <button class="modal-close" onclick="closeWorkoutModalDirect()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
     </div>
-    <div class="rule-row"><b>Warm-up</b><span>8–10 min before every resistance workout</span></div>
-    <div class="rule-row"><b>Compound exercises</b><span>3 sets × 6–10 reps</span></div>
-    <div class="rule-row"><b>Isolation exercises</b><span>3 sets × 10–15 reps</span></div>
-    <div class="rule-row"><b>Abs</b><span>3 sets × 10–20 reps / 30–45 sec</span></div>
-    <div class="rule-row"><b>Compound rest</b><span>2–3 min</span></div>
-    <div class="rule-row"><b>Isolation rest</b><span>60–90 sec</span></div>
-    <p class="rule-note">Record your <b style="color:var(--text)">exercise, weight, reps and sets</b> every workout. Increase weight only when you can perform the upper end of the rep range with good form.</p>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- VIDEO MODAL -->
+<div class="video-modal-overlay" id="video-modal" onclick="closeVideoModal(event)">
+  <div class="video-modal">
+    <div class="video-modal-header">
+      <div class="video-modal-title" id="video-modal-title"></div>
+      <button class="video-close" onclick="closeVideoModalDirect()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="video-modal-content"></div>
+    <div class="video-url-note">Replace VIDEO_URL in workoutData to add real videos</div>
   </div>
 </div>
 
 <script>
-const days = [
+// ============================================================
+// WORKOUT DATA — edit this object to update any content
+// ============================================================
+const workoutData = [
   {
-    day:"Monday", color:"var(--rest)", label:"Day off", title:"Complete Rest",
-    muscles:"No heavy training", isRest:true,
-    restList:["Walk casually","Do light stretching","Recover","Sleep properly","Prepare for the week ahead"]
+    day: "Monday",
+    status: "leave",
+    title: "Leave",
+    subtitle: "Rest / Personal Day"
   },
   {
-    day:"Tuesday", color:"var(--push)", label:"Push + Abs", title:"Chest, Shoulders & Triceps",
-    muscles:"Chest + Shoulders + Triceps",
-    rows:[
-      ["Bench Press / Dumbbell Bench Press","3 × 6–10"],
-      ["Incline Dumbbell Press","3 × 8–12"],
-      ["Seated Dumbbell Shoulder Press","3 × 8–12"],
-      ["Cable/Dumbbell Lateral Raise","3 × 10–15"],
-      ["Triceps Pushdown","3 × 10–15"],
-      ["Overhead Triceps Extension","2–3 × 10–15"],
-      ["Plank","3 × 30–45 sec"]
+    day: "Tuesday",
+    title: "Pull",
+    muscles: "Back + Rear Delts + Biceps",
+    exercises: [
+      { name: "Lat Pulldown", sets: "3 × 8–12", videoUrl: "" },
+      { name: "Seated Cable Row", sets: "3 × 8–12", videoUrl: "" },
+      { name: "Single-Arm Dumbbell Row", sets: "3 × 8–12 each", videoUrl: "" },
+      { name: "Face Pull / Reverse Fly", sets: "3 × 10–15", videoUrl: "" },
+      { name: "Dumbbell/Cable Biceps Curl", sets: "3 × 10–15", videoUrl: "" },
+      { name: "Hammer Curl", sets: "2–3 × 10–15", videoUrl: "" }
     ],
-    note:"<b>Focus:</b> controlled movement and proper technique."
+    note: "Focus: don't rush the eccentric/returning phase. Control the weight."
   },
   {
-    day:"Wednesday", color:"var(--pull)", label:"Pull", title:"Back, Rear Delts & Biceps",
-    muscles:"Back + Rear Delts + Biceps",
-    rows:[
-      ["Lat Pulldown","3 × 8–12"],
-      ["Seated Cable Row","3 × 8–12"],
-      ["Single-Arm Dumbbell Row","3 × 8–12 each"],
-      ["Face Pull / Reverse Fly","3 × 10–15"],
-      ["Dumbbell/Cable Biceps Curl","3 × 10–15"],
-      ["Hammer Curl","2–3 × 10–15"]
+    day: "Wednesday",
+    title: "Legs + Abs",
+    muscles: "Quads + Hamstrings + Glutes + Calves",
+    exercises: [
+      { name: "Back Squat / Goblet Squat", sets: "3 × 6–10", videoUrl: "" },
+      { name: "Romanian Deadlift", sets: "3 × 8–12", videoUrl: "" },
+      { name: "Leg Press", sets: "3 × 8–12", videoUrl: "" },
+      { name: "Bulgarian Split Squat", sets: "2–3 × 8–12 each", videoUrl: "" },
+      { name: "Leg Curl", sets: "3 × 10–15", videoUrl: "" },
+      { name: "Calf Raise", sets: "3 × 10–15", videoUrl: "" },
+      { name: "Crunch", sets: "3 × 10–20", videoUrl: "" }
     ],
-    note:"<b>Focus:</b> don't rush the eccentric/returning phase. Control the weight."
+    note: "Important: You don't need to make every leg exercise extremely heavy. Technique comes first."
   },
   {
-    day:"Thursday", color:"var(--legs)", label:"Legs + Abs", title:"Quads, Hamstrings & Glutes",
-    muscles:"Quads + Hamstrings + Glutes + Calves",
-    rows:[
-      ["Back Squat / Goblet Squat","3 × 6–10"],
-      ["Romanian Deadlift","3 × 8–12"],
-      ["Leg Press","3 × 8–12"],
-      ["Bulgarian Split Squat","2–3 × 8–12 each"],
-      ["Leg Curl","3 × 10–15"],
-      ["Calf Raise","3 × 10–15"],
-      ["Crunch","3 × 10–20"]
+    day: "Thursday",
+    title: "Cardio + Mobility",
+    muscles: "Recovery-Focused Day",
+    type: "cardio",
+    cardio: {
+      label: "Cardio",
+      activity: "Incline walking — 20–30 minutes",
+      note: "Keep the intensity moderate. You should be able to speak in short sentences."
+    },
+    mobilityLabel: "Mobility — 10–15 min",
+    mobilityNote: "Mobility should be controlled, not painful.",
+    mobilityGroups: [
+      {
+        group: "Hips",
+        exercises: [
+          { name: "90/90 hip rotations", videoUrl: "" },
+          { name: "Hip circles", videoUrl: "" }
+        ]
+      },
+      {
+        group: "Ankles",
+        exercises: [
+          { name: "Knee-to-wall ankle mobility", videoUrl: "" }
+        ]
+      },
+      {
+        group: "Thoracic spine",
+        exercises: [
+          { name: "Thoracic rotations", videoUrl: "" }
+        ]
+      },
+      {
+        group: "Shoulders",
+        exercises: [
+          { name: "Arm circles", videoUrl: "" },
+          { name: "Shoulder rotations", videoUrl: "" }
+        ]
+      },
+      {
+        group: "Hamstrings",
+        exercises: [
+          { name: "Dynamic hamstring stretch", videoUrl: "" }
+        ]
+      },
+      {
+        group: "Hip flexors",
+        exercises: [
+          { name: "Half-kneeling hip-flexor stretch", videoUrl: "" }
+        ]
+      }
+    ]
+  },
+  {
+    day: "Friday",
+    title: "Upper",
+    muscles: "Upper-body strength",
+    exercises: [
+      { name: "Bench Press / Chest Press", sets: "3 × 6–10", videoUrl: "" },
+      { name: "Lat Pulldown / Assisted Pull-up", sets: "3 × 8–12", videoUrl: "" },
+      { name: "Seated Cable Row", sets: "3 × 8–12", videoUrl: "" },
+      { name: "Dumbbell Shoulder Press", sets: "3 × 8–12", videoUrl: "" },
+      { name: "Lateral Raise", sets: "3 × 10–15", videoUrl: "" },
+      { name: "Biceps Curl", sets: "2–3 × 10–15", videoUrl: "" },
+      { name: "Triceps Pushdown", sets: "2–3 × 10–15", videoUrl: "" }
     ],
-    note:"<b>Important:</b> you don't need to make every leg exercise extremely heavy. Technique comes first."
+    note: "This gives your upper body a second training stimulus during the week."
   },
   {
-    day:"Friday", color:"var(--cardio)", label:"Cardio + Mobility", title:"Recovery-Focused Day",
-    muscles:"Not another hard strength session",
-    isMobility:true,
-    cardio:"Incline walking — 20–30 minutes. Keep the intensity moderate — you should be able to speak in short sentences.",
-    mobilityGroups:[
-      ["Hips",["90/90 hip rotations","Hip circles"]],
-      ["Ankles",["Knee-to-wall ankle mobility"]],
-      ["Thoracic spine",["Thoracic rotations"]],
-      ["Shoulders",["Arm circles","Shoulder rotations"]],
-      ["Hamstrings",["Dynamic hamstring stretch"]],
-      ["Hip flexors",["Half-kneeling hip-flexor stretch"]]
-    ],
-    note:"👉 Mobility should be <b>controlled</b>, not painful."
+    day: "Saturday",
+    title: "Lower + Abs",
+    muscles: "Glutes + Hamstrings + Quads + Calves",
+    exercises: [
+      { name: "Trap-Bar Deadlift / Deadlift", sets: "3 × 5–8", videoUrl: "" },
+      { name: "Hip Thrust", sets: "3 × 8–12", videoUrl: "" },
+      { name: "Front Squat / Goblet Squat", sets: "3 × 8–12", videoUrl: "" },
+      { name: "Walking Lunges", sets: "2–3 × 8–12 each", videoUrl: "" },
+      { name: "Leg Curl", sets: "3 × 10–15", videoUrl: "" },
+      { name: "Calf Raise", sets: "3 × 10–15", videoUrl: "" },
+      { name: "Hanging Knee Raise", sets: "3 × 10–15", videoUrl: "" }
+    ]
   },
   {
-    day:"Saturday", color:"var(--upper)", label:"Upper", title:"Upper-Body Strength",
-    muscles:"Second stimulus for the upper body",
-    rows:[
-      ["Bench Press / Chest Press","3 × 6–10"],
-      ["Lat Pulldown / Assisted Pull-up","3 × 8–12"],
-      ["Seated Cable Row","3 × 8–12"],
-      ["Dumbbell Shoulder Press","3 × 8–12"],
-      ["Lateral Raise","3 × 10–15"],
-      ["Biceps Curl","2–3 × 10–15"],
-      ["Triceps Pushdown","2–3 × 10–15"]
-    ],
-    note:"This gives your upper body a <b>second training stimulus</b> during the week."
-  },
-  {
-    day:"Sunday", color:"var(--lower)", label:"Lower + Abs", title:"Glutes, Hamstrings & Quads",
-    muscles:"Glutes + Hamstrings + Quads + Calves",
-    rows:[
-      ["Trap-Bar Deadlift / Deadlift","3 × 5–8"],
-      ["Hip Thrust","3 × 8–12"],
-      ["Front Squat / Goblet Squat","3 × 8–12"],
-      ["Walking Lunges","2–3 × 8–12 each"],
-      ["Leg Curl","3 × 10–15"],
-      ["Calf Raise","3 × 10–15"],
-      ["Hanging Knee Raise","3 × 10–15"]
+    day: "Sunday",
+    status: "rest",
+    title: "Complete Rest",
+    subtitle: "No heavy training. Focus on recovery and prepare for the next week.",
+    restItems: [
+      "Walk casually",
+      "Do light stretching",
+      "Recover",
+      "Sleep properly",
+      "Prepare for the next week"
     ]
   }
 ];
 
-const timeline = document.getElementById('timeline');
+// ============================================================
+// RENDER CARDS
+// ============================================================
+function renderCards() {
+  const container = document.getElementById('cards-container');
+  workoutData.forEach((day, idx) => {
+    const card = document.createElement('div');
 
-days.forEach((d, i) => {
-  const dayEl = document.createElement('div');
-  dayEl.className = 'day';
+    if (day.status === 'leave') {
+      card.className = 'card card-leave';
+      card.innerHTML = `
+        <div class="card-day">${day.day}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <div class="card-title">${day.title}</div>
+          <span class="tag tag-leave">Personal Day</span>
+        </div>
+        <div class="card-muscles" style="margin-top:6px;margin-bottom:0;">Rest / Personal Day</div>
+      `;
+    } else if (day.status === 'rest') {
+      card.className = 'card card-rest';
+      card.innerHTML = `
+        <div class="card-day">${day.day}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <div class="card-title">${day.title}</div>
+          <span class="tag tag-rest">No Training</span>
+        </div>
+        <div class="card-muscles" style="margin-top:6px;margin-bottom:0;">${day.subtitle}</div>
+      `;
+    } else {
+      card.className = 'card clickable';
+      card.innerHTML = `
+        <div class="card-day">${day.day}</div>
+        <div class="card-title">${day.title}</div>
+        <div class="card-muscles">${day.muscles}</div>
+        <div class="card-divider"></div>
+        <button class="btn-view" onclick="openWorkout(${idx})">
+          View Workout
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      `;
+      card.addEventListener('click', (e) => {
+        if (!e.target.closest('.btn-view')) openWorkout(idx);
+      });
+    }
+    container.appendChild(card);
+  });
+}
 
-  let bodyContent = '';
-  if(d.isRest){
-    bodyContent = `<ul class="rest-list">${d.restList.map(x=>`<li>${x}</li>`).join('')}</ul>`;
-  } else if(d.isMobility){
-    bodyContent = `
-      <div class="sublabel">Cardio</div>
-      <p style="font-size:14px; line-height:1.6; color:var(--text);">${d.cardio}</p>
-      <div class="sublabel">Mobility — 10–15 min</div>
-      ${d.mobilityGroups.map(g => `
-        <p style="font-size:13px; color:var(--milk-dim); margin-top:10px; font-weight:600;">${g[0]}</p>
-        <ul class="rest-list">${g[1].map(x=>`<li>${x}</li>`).join('')}</ul>
-      `).join('')}
-      <div class="note">${d.note}</div>
-    `;
-  } else {
-    bodyContent = `
-      <table>
-        <tr><th>Exercise</th><th>Sets × Reps</th></tr>
-        ${d.rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}
-      </table>
-      ${d.note ? `<div class="note">${d.note}</div>` : ''}
-    `;
+// ============================================================
+// WORKOUT MODAL
+// ============================================================
+function openWorkout(idx) {
+  const day = workoutData[idx];
+  document.getElementById('modal-day-label').textContent = day.day;
+  document.getElementById('modal-title').textContent = day.title;
+  document.getElementById('modal-subtitle').textContent = day.muscles || day.subtitle || '';
+
+  const body = document.getElementById('modal-body');
+  body.innerHTML = '';
+
+  if (day.status === 'rest') {
+    // Sunday
+    const ul = document.createElement('ul');
+    ul.className = 'rest-list';
+    ul.style.marginTop = '16px';
+    day.restItems.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      ul.appendChild(li);
+    });
+    body.appendChild(ul);
+    return;
   }
 
-  dayEl.innerHTML = `
-    <div class="dot" style="background:${d.color}"></div>
-    <div class="card" id="card-${i}">
-      <div class="card-head">
-        <div class="card-head-left">
-          <div class="day-label">${d.day} · ${d.label}</div>
-          <div class="day-title">${d.title}</div>
-          <div class="day-muscles">${d.muscles}</div>
-        </div>
-        <button class="view-btn ${d.isRest ? 'is-rest' : ''}" onclick="toggleCard(${i})">View</button>
-      </div>
-      <div class="card-body" id="body-${i}">
-        <div class="card-body-inner">${bodyContent}</div>
-      </div>
-    </div>
-  `;
-  timeline.appendChild(dayEl);
-});
+  if (day.type === 'cardio') {
+    // Thursday
+    const cardioHead = document.createElement('div');
+    cardioHead.className = 'modal-section-head';
+    cardioHead.textContent = day.cardio.label;
+    body.appendChild(cardioHead);
 
-function toggleCard(i){
-  const card = document.getElementById(`card-${i}`);
-  const body = document.getElementById(`body-${i}`);
-  const btn = card.querySelector('.view-btn');
-  const isOpen = card.classList.contains('open');
+    const cardioBlock = document.createElement('div');
+    cardioBlock.className = 'info-block';
+    cardioBlock.innerHTML = `
+      <div class="info-block-title">${day.cardio.activity}</div>
+      <div class="info-block-sub">${day.cardio.note}</div>
+    `;
+    body.appendChild(cardioBlock);
 
-  if(isOpen){
-    body.style.maxHeight = null;
-    card.classList.remove('open');
-    btn.textContent = 'View';
-  } else {
-    body.style.maxHeight = body.scrollHeight + 'px';
-    card.classList.add('open');
-    btn.textContent = 'Hide';
+    const mobilityHead = document.createElement('div');
+    mobilityHead.className = 'modal-section-head';
+    mobilityHead.style.marginTop = '8px';
+    mobilityHead.textContent = day.mobilityLabel;
+    body.appendChild(mobilityHead);
+
+    day.mobilityGroups.forEach(group => {
+      const g = document.createElement('div');
+      g.className = 'mobility-group';
+      g.innerHTML = `<div class="mobility-group-name">${group.group}</div>`;
+      group.exercises.forEach(ex => {
+        const row = document.createElement('div');
+        row.className = 'mobility-item';
+        row.innerHTML = `
+          <span class="mobility-item-name">${ex.name}</span>
+          <button class="btn-video" onclick="openVideo('${escapeQuotes(ex.name)}', '${ex.videoUrl}')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Demo
+          </button>
+        `;
+        g.appendChild(row);
+      });
+      body.appendChild(g);
+    });
+
+    const note = document.createElement('div');
+    note.className = 'focus-note';
+    note.style.marginTop = '16px';
+    note.innerHTML = `<strong>Note:</strong> ${day.mobilityNote}`;
+    body.appendChild(note);
+    return;
+  }
+
+  // Normal workout days
+  const exHead = document.createElement('div');
+  exHead.className = 'modal-section-head';
+  exHead.textContent = 'Exercises';
+  body.appendChild(exHead);
+
+  day.exercises.forEach(ex => {
+    const row = document.createElement('div');
+    row.className = 'exercise-row';
+    row.innerHTML = `
+      <div class="exercise-info">
+        <div class="exercise-name">${ex.name}</div>
+        <div class="exercise-sets">${ex.sets}</div>
+      </div>
+      <button class="btn-video" onclick="openVideo('${escapeQuotes(ex.name)}', '${ex.videoUrl}')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Demo Video
+      </button>
+    `;
+    body.appendChild(row);
+  });
+
+  if (day.note) {
+    const note = document.createElement('div');
+    note.className = 'focus-note';
+    note.innerHTML = `<strong>Note:</strong> ${day.note}`;
+    body.appendChild(note);
+  }
+
+  const modal = document.getElementById('workout-modal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function openWorkout(idx) {
+  const day = workoutData[idx];
+  document.getElementById('modal-day-label').textContent = day.day;
+  document.getElementById('modal-title').textContent = day.title;
+  document.getElementById('modal-subtitle').textContent = day.muscles || day.subtitle || '';
+
+  const body = document.getElementById('modal-body');
+  body.innerHTML = '';
+  buildModalBody(body, day);
+
+  const modal = document.getElementById('workout-modal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function buildModalBody(body, day) {
+  if (day.status === 'rest') {
+    const ul = document.createElement('ul');
+    ul.className = 'rest-list';
+    ul.style.marginTop = '16px';
+    day.restItems.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      ul.appendChild(li);
+    });
+    body.appendChild(ul);
+    return;
+  }
+
+  if (day.type === 'cardio') {
+    const cardioHead = document.createElement('div');
+    cardioHead.className = 'modal-section-head';
+    cardioHead.textContent = day.cardio.label;
+    body.appendChild(cardioHead);
+
+    const cardioBlock = document.createElement('div');
+    cardioBlock.className = 'info-block';
+    cardioBlock.innerHTML = `<div class="info-block-title">${day.cardio.activity}</div><div class="info-block-sub">${day.cardio.note}</div>`;
+    body.appendChild(cardioBlock);
+
+    const mobilityHead = document.createElement('div');
+    mobilityHead.className = 'modal-section-head';
+    mobilityHead.style.marginTop = '8px';
+    mobilityHead.textContent = day.mobilityLabel;
+    body.appendChild(mobilityHead);
+
+    day.mobilityGroups.forEach(group => {
+      const g = document.createElement('div');
+      g.className = 'mobility-group';
+      g.innerHTML = `<div class="mobility-group-name">${group.group}</div>`;
+      group.exercises.forEach(ex => {
+        const row = document.createElement('div');
+        row.className = 'mobility-item';
+        row.innerHTML = `
+          <span class="mobility-item-name">${ex.name}</span>
+          <button class="btn-video" onclick="openVideo('${escapeQuotes(ex.name)}', '${ex.videoUrl}')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Demo
+          </button>`;
+        g.appendChild(row);
+      });
+      body.appendChild(g);
+    });
+
+    const note = document.createElement('div');
+    note.className = 'focus-note';
+    note.style.marginTop = '16px';
+    note.innerHTML = `<strong>Note:</strong> ${day.mobilityNote}`;
+    body.appendChild(note);
+    return;
+  }
+
+  // Standard strength day
+  const exHead = document.createElement('div');
+  exHead.className = 'modal-section-head';
+  exHead.textContent = 'Exercises';
+  body.appendChild(exHead);
+
+  day.exercises.forEach(ex => {
+    const row = document.createElement('div');
+    row.className = 'exercise-row';
+    row.innerHTML = `
+      <div class="exercise-info">
+        <div class="exercise-name">${ex.name}</div>
+        <div class="exercise-sets">${ex.sets}</div>
+      </div>
+      <button class="btn-video" onclick="openVideo('${escapeQuotes(ex.name)}', '${ex.videoUrl}')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Demo Video
+      </button>`;
+    body.appendChild(row);
+  });
+
+  if (day.note) {
+    const note = document.createElement('div');
+    note.className = 'focus-note';
+    note.innerHTML = `<strong>Note:</strong> ${day.note}`;
+    body.appendChild(note);
   }
 }
 
-document.getElementById('rulesOverlay').addEventListener('click', (e) => {
-  if(e.target.id === 'rulesOverlay') e.target.classList.remove('show');
-});
-</script>
+function closeWorkoutModal(e) {
+  if (e.target === document.getElementById('workout-modal')) closeWorkoutModalDirect();
+}
 
+function closeWorkoutModalDirect() {
+  document.getElementById('workout-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ============================================================
+// VIDEO MODAL
+// ============================================================
+function escapeQuotes(str) {
+  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function openVideo(name, url) {
+  document.getElementById('video-modal-title').textContent = name;
+  const content = document.getElementById('video-modal-content');
+
+  if (url && url.trim() !== '') {
+    // Convert YouTube watch URL to embed URL if needed
+    let embedUrl = url;
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+    if (ytMatch) embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+    content.innerHTML = `<iframe class="video-iframe" src="${embedUrl}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+  } else {
+    content.innerHTML = `
+      <div class="video-placeholder">
+        <div class="video-placeholder-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <p>Video placeholder — add a URL to <code style="color:var(--accent);font-size:10px;">videoUrl</code> in workoutData</p>
+      </div>`;
+  }
+
+  document.getElementById('video-modal').classList.add('open');
+}
+
+function closeVideoModal(e) {
+  if (e.target === document.getElementById('video-modal')) closeVideoModalDirect();
+}
+
+function closeVideoModalDirect() {
+  document.getElementById('video-modal').classList.remove('open');
+  document.getElementById('video-modal-content').innerHTML = '';
+}
+
+// Keyboard close
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeVideoModalDirect();
+    closeWorkoutModalDirect();
+  }
+});
+
+// Init
+renderCards();
+</script>
 </body>
 </html>
