@@ -1,1004 +1,1115 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Training Plan</title>
-<style>
-  :root {
-    --bg: #0a0a0a;
-    --card: #111111;
-    --card-hover: #161616;
-    --border: #1e1e1e;
-    --accent: #4f8ef7;
-    --accent-dim: rgba(79,142,247,0.12);
-    --text: #f0f0f0;
-    --text-muted: #6b6b6b;
-    --text-secondary: #9a9a9a;
-    --leave: #1a1a1a;
-    --rest: #0f0f0f;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    line-height: 1.5;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* NAV */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(10,10,10,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-  }
-
-  .nav-link {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  .nav-link:hover { color: var(--accent); }
-
-  /* HERO */
-  .hero-wrapper {
-    position: relative;
-    overflow: hidden;
-    background: var(--bg);
-  }
-
-  .hero-wrapper::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-  }
-
-  /* Fade the grid out toward the bottom */
-  .hero-wrapper::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to bottom,
-      transparent 40%,
-      var(--bg) 100%
-    );
-    pointer-events: none;
-  }
-
-  .hero {
-    position: relative;
-    z-index: 1;
-    padding: 80px 24px 96px;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .hero-eyebrow {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .hero-eyebrow::before {
-    content: '';
-    display: block;
-    width: 24px;
-    height: 1px;
-    background: var(--accent);
-  }
-
-  .hero h1 {
-    font-size: clamp(36px, 9vw, 64px);
-    font-weight: 800;
-    line-height: 1.0;
-    letter-spacing: -0.02em;
-    color: var(--text);
-    margin-bottom: 20px;
-  }
-
-  .hero h1 em {
-    font-style: normal;
-    color: var(--accent);
-  }
-
-  .hero p {
-    font-size: 16px;
-    color: var(--text-secondary);
-    line-height: 1.65;
-    margin-bottom: 36px;
-    max-width: 440px;
-  }
-
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--accent);
-    color: #0a0a0a;
-    padding: 14px 24px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.15s;
-  }
-
-  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(0); }
-
-  /* SECTION */
-  .section {
-    padding: 0 24px 80px;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 32px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  /* CARDS */
-  .cards { display: flex; flex-direction: column; gap: 12px; }
-
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px 22px 18px;
-    transition: background 0.2s, border-color 0.2s, transform 0.15s;
-    cursor: default;
-  }
-
-  .card.clickable {
-    cursor: pointer;
-  }
-
-  .card.clickable:hover {
-    background: var(--card-hover);
-    border-color: #2a2a2a;
-    transform: translateY(-2px);
-  }
-
-  .card-day {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-
-  .card-title {
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-
-  .card-muscles {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-  }
-
-  .card-divider {
-    height: 1px;
-    background: var(--border);
-    margin-bottom: 16px;
-  }
-
-  .btn-view {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    padding: 9px 16px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-view:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent-dim);
-  }
-
-  .btn-view svg { width: 12px; height: 12px; }
-
-  /* Leave / Rest cards */
-  .card-leave {
-    background: var(--leave);
-    opacity: 0.7;
-  }
-
-  .card-leave .card-title { color: var(--text-secondary); font-size: 16px; }
-
-  .card-rest {
-    background: var(--rest);
-    border-style: dashed;
-    opacity: 0.6;
-  }
-
-  .card-rest .card-title { color: var(--text-muted); font-size: 16px; }
-
-  .tag {
-    display: inline-block;
-    padding: 3px 9px;
-    border-radius: 5px;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .tag-leave { background: #1e1e1e; color: var(--text-muted); }
-  .tag-rest { background: #151515; color: #444; }
-
-  /* MODAL */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 200;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s;
-  }
-
-  .modal-overlay.open {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  .modal {
-    background: #111;
-    border: 1px solid var(--border);
-    border-radius: 20px 20px 0 0;
-    width: 100%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    transform: translateY(40px);
-    transition: transform 0.3s cubic-bezier(0.34, 1.3, 0.64, 1);
-  }
-
-  @media (min-width: 600px) {
-    .modal-overlay { align-items: center; }
-    .modal {
-      border-radius: 20px;
-      max-height: 85vh;
-      margin: 16px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training Plan</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #111111;
+      --card-hover: #161616;
+      --border: #1e1e1e;
+      --accent: #4f8ef7;
+      --accent-dim: rgba(79, 142, 247, 0.12);
+      --text: #f0f0f0;
+      --text-muted: #6b6b6b;
+      --text-secondary: #9a9a9a;
+      --leave: #1a1a1a;
+      --rest: #0f0f0f;
     }
-  }
 
-  .modal-overlay.open .modal { transform: translateY(0); }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  .modal-handle {
-    width: 36px;
-    height: 4px;
-    background: #2a2a2a;
-    border-radius: 99px;
-    margin: 14px auto 0;
-  }
+    html {
+      scroll-behavior: smooth;
+    }
 
-  @media (min-width: 600px) { .modal-handle { display: none; } }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-  .modal-header {
-    padding: 20px 22px 16px;
-    position: sticky;
-    top: 0;
-    background: #111;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .modal-header-info {}
-
-  .modal-day-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 4px;
-  }
-
-  .modal-title {
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    color: var(--text);
-  }
-
-  .modal-subtitle {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-top: 2px;
-  }
-
-  .modal-close {
-    background: #1e1e1e;
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 4px;
-    transition: background 0.2s;
-  }
-
-  .modal-close:hover { background: #2a2a2a; color: var(--text); }
-
-  .modal-body { padding: 0 22px 32px; }
-
-  /* Section headers inside modal */
-  .modal-section-head {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    padding: 20px 0 10px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 0;
-  }
-
-  /* Exercise row */
-  .exercise-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .exercise-info {}
-
-  .exercise-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 2px;
-  }
-
-  .exercise-sets {
-    font-size: 12px;
-    color: var(--text-secondary);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .btn-video {
-    background: var(--accent-dim);
-    border: 1px solid rgba(184,212,168,0.2);
-    color: var(--accent);
-    padding: 7px 12px;
-    border-radius: 7px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: background 0.2s;
-    flex-shrink: 0;
-  }
-
-  .btn-video:hover { background: rgba(184,212,168,0.2); }
-
-  /* Focus note */
-  .focus-note {
-    margin-top: 20px;
-    padding: 14px 16px;
-    background: #0f0f0f;
-    border: 1px solid var(--border);
-    border-left: 2px solid var(--accent);
-    border-radius: 8px;
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-  }
-
-  .focus-note strong { color: var(--accent); }
-
-  /* Cardio / mobility items */
-  .info-block { padding: 16px 0; border-bottom: 1px solid var(--border); }
-  .info-block-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-  .info-block-sub { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
-
-  .mobility-group { padding: 14px 0; border-bottom: 1px solid var(--border); }
-  .mobility-group-name {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-
-  .mobility-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0;
-    gap: 12px;
-  }
-
-  .mobility-item-name { font-size: 13px; color: var(--text); }
-
-  /* Sunday bullets */
-  .rest-list { list-style: none; padding: 12px 0; }
-  .rest-list li {
-    font-size: 14px;
-    color: var(--text-secondary);
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .rest-list li::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--border);
-    flex-shrink: 0;
-  }
-
-  /* VIDEO MODAL */
-  .video-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.95);
-    z-index: 300;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-    padding: 16px;
-  }
-
-  .video-modal-overlay.open {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  .video-modal {
-    width: 100%;
-    max-width: 560px;
-    background: #111;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    transform: scale(0.95);
-    transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
-  }
-
-  .video-modal-overlay.open .video-modal { transform: scale(1); }
-
-  .video-modal-header {
-    padding: 16px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .video-modal-title { font-size: 14px; font-weight: 600; color: var(--text); }
-
-  .video-close {
-    background: #1e1e1e;
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    width: 30px;
-    height: 30px;
-    border-radius: 7px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-    flex-shrink: 0;
-  }
-
-  .video-close:hover { background: #2a2a2a; color: var(--text); }
-
-  .video-placeholder {
-    aspect-ratio: 16/9;
-    background: #0a0a0a;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-  }
-
-  .video-placeholder-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--accent-dim);
-    border: 1px solid rgba(184,212,168,0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .video-placeholder-icon svg { color: var(--accent); width: 22px; height: 22px; }
-
-  .video-placeholder p {
-    font-size: 12px;
-    color: var(--text-muted);
-    text-align: center;
-    max-width: 200px;
-    line-height: 1.5;
-  }
-
-  .video-url-note {
-    padding: 12px 18px;
-    font-size: 11px;
-    color: #3a3a3a;
-    text-align: center;
-    letter-spacing: 0.04em;
-  }
-
-  /* iframe for real video */
-  .video-iframe {
-    width: 100%;
-    aspect-ratio: 16/9;
-    border: none;
-    display: block;
-  }
-
-  /* ============================================================
-     RESPONSIVE BREAKPOINTS
-  ============================================================ */
-
-  /* Tablet — 640px+ */
-  @media (min-width: 640px) {
+    /* NAV */
     nav {
-      padding: 0 40px;
-      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 10, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    .hero {
-      padding: 100px 40px 110px;
-      max-width: 720px;
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-link {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--accent);
+    }
+
+    /* HERO */
+    .hero-wrapper {
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
     }
 
     .hero-wrapper::before {
-      background-size: 70px 70px;
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
     }
 
-    .hero h1 {
-      font-size: clamp(48px, 7vw, 72px);
+    /* Fade the grid out toward the bottom */
+    .hero-wrapper::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom,
+          transparent 40%,
+          var(--bg) 100%);
+      pointer-events: none;
     }
-
-    .hero p {
-      font-size: 17px;
-      max-width: 480px;
-    }
-
-    .section {
-      padding: 0 40px 100px;
-      max-width: 720px;
-    }
-
-    .card {
-      padding: 26px 26px 22px;
-    }
-
-    .card-title { font-size: 22px; }
-
-    .modal {
-      border-radius: 20px;
-      max-height: 82vh;
-      margin: 24px;
-    }
-
-    .modal-overlay {
-      align-items: center;
-    }
-
-    .modal-handle { display: none; }
-
-    .video-modal {
-      max-width: 640px;
-    }
-  }
-
-  /* Desktop — 1024px+ */
-  @media (min-width: 1024px) {
-    nav {
-      padding: 0 60px;
-      height: 64px;
-    }
-
-    .logo { font-size: 14px; }
-    .nav-link { font-size: 13px; }
 
     .hero {
-      padding: 120px 60px 130px;
-      max-width: 1100px;
+      position: relative;
+      z-index: 1;
+      padding: 80px 24px 96px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--accent);
     }
 
     .hero h1 {
-      font-size: clamp(56px, 5.5vw, 88px);
+      font-size: clamp(36px, 9vw, 64px);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
     }
 
     .hero p {
-      font-size: 18px;
-      max-width: 520px;
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 36px;
+      max-width: 440px;
     }
 
     .btn-primary {
-      padding: 16px 28px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: #0a0a0a;
+      padding: 14px 24px;
+      border-radius: 10px;
       font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
     }
 
+    .btn-primary:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* SECTION */
     .section {
-      padding: 0 60px 120px;
-      max-width: 1100px;
+      padding: 0 24px 80px;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    /* 2-column card grid on desktop */
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
       gap: 14px;
     }
 
-    /* Monday (leave) spans full width */
-    .cards .card:first-child {
-      grid-column: 1 / -1;
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
 
-    /* Sunday (rest) spans full width */
-    .cards .card:last-child {
-      grid-column: 1 / -1;
+    /* CARDS */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .card {
-      padding: 28px 28px 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 22px 18px;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      cursor: default;
     }
 
-    .card-title { font-size: 24px; }
-    .card-muscles { font-size: 14px; }
+    .card.clickable {
+      cursor: pointer;
+    }
+
+    .card.clickable:hover {
+      background: var(--card-hover);
+      border-color: #2a2a2a;
+      transform: translateY(-2px);
+    }
+
+    .card-day {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .card-muscles {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .card-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 16px;
+    }
 
     .btn-view {
-      padding: 10px 18px;
-      font-size: 12px;
-    }
-
-    /* Modal centered, narrower on large screens */
-    .modal {
-      max-width: 560px;
-      max-height: 80vh;
-      margin: 0;
-    }
-
-    .modal-overlay {
+      display: inline-flex;
       align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .modal-header { padding: 24px 28px 18px; }
-    .modal-body { padding: 0 28px 36px; }
-
-    .modal-title { font-size: 26px; }
-
-    .exercise-name { font-size: 15px; }
-    .exercise-sets { font-size: 13px; }
-
-    .video-modal { max-width: 700px; }
-  }
-
-  /* Large desktop — 1280px+ */
-  @media (min-width: 1280px) {
-    .hero {
-      padding: 140px 80px 150px;
-      max-width: 1200px;
+    .btn-view:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
     }
 
-    .section {
-      padding: 0 80px 140px;
-      max-width: 1200px;
+    .btn-view svg {
+      width: 12px;
+      height: 12px;
     }
 
-    nav { padding: 0 80px; }
+    /* Leave / Rest cards */
+    .card-leave {
+      background: var(--leave);
+      opacity: 0.7;
+    }
 
-    .cards { gap: 16px; }
-  }
-</style>
+    .card-leave .card-title {
+      color: var(--text-secondary);
+      font-size: 16px;
+    }
+
+    .card-rest {
+      background: var(--rest);
+      border-style: dashed;
+      opacity: 0.6;
+    }
+
+    .card-rest .card-title {
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 5px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .tag-leave {
+      background: #1e1e1e;
+      color: var(--text-muted);
+    }
+
+    .tag-rest {
+      background: #151515;
+      color: #444;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(40px);
+      transition: transform 0.3s cubic-bezier(0.34, 1.3, 0.64, 1);
+    }
+
+    @media (min-width: 600px) {
+      .modal-overlay {
+        align-items: center;
+      }
+
+      .modal {
+        border-radius: 20px;
+        max-height: 85vh;
+        margin: 16px;
+      }
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      background: #2a2a2a;
+      border-radius: 99px;
+      margin: 14px auto 0;
+    }
+
+    @media (min-width: 600px) {
+      .modal-handle {
+        display: none;
+      }
+    }
+
+    .modal-header {
+      padding: 20px 22px 16px;
+      position: sticky;
+      top: 0;
+      background: #111;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-header-info {}
+
+    .modal-day-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .modal-close {
+      background: #1e1e1e;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 4px;
+      transition: background 0.2s;
+    }
+
+    .modal-close:hover {
+      background: #2a2a2a;
+      color: var(--text);
+    }
+
+    .modal-body {
+      padding: 0 22px 32px;
+    }
+
+    /* Section headers inside modal */
+    .modal-section-head {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 20px 0 10px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    /* Exercise row */
+    .exercise-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .exercise-info {}
+
+    .exercise-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .exercise-sets {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .btn-video {
+      background: var(--accent-dim);
+      border: 1px solid rgba(184, 212, 168, 0.2);
+      color: var(--accent);
+      padding: 7px 12px;
+      border-radius: 7px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .btn-video:hover {
+      background: rgba(184, 212, 168, 0.2);
+    }
+
+    /* Focus note */
+    .focus-note {
+      margin-top: 20px;
+      padding: 14px 16px;
+      background: #0f0f0f;
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .focus-note strong {
+      color: var(--accent);
+    }
+
+    /* Cardio / mobility items */
+    .info-block {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-block-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .info-block-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .mobility-group {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mobility-group-name {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .mobility-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      gap: 12px;
+    }
+
+    .mobility-item-name {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    /* Sunday bullets */
+    .rest-list {
+      list-style: none;
+      padding: 12px 0;
+    }
+
+    .rest-list li {
+      font-size: 14px;
+      color: var(--text-secondary);
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rest-list li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    /* VIDEO MODAL */
+    .video-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      padding: 16px;
+    }
+
+    .video-modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .video-modal {
+      width: 100%;
+      max-width: 560px;
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+
+    .video-modal-overlay.open .video-modal {
+      transform: scale(1);
+    }
+
+    .video-modal-header {
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .video-modal-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .video-close {
+      background: #1e1e1e;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .video-close:hover {
+      background: #2a2a2a;
+      color: var(--text);
+    }
+
+    .video-placeholder {
+      aspect-ratio: 16/9;
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .video-placeholder-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 1px solid rgba(184, 212, 168, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-placeholder-icon svg {
+      color: var(--accent);
+      width: 22px;
+      height: 22px;
+    }
+
+    .video-placeholder p {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      max-width: 200px;
+      line-height: 1.5;
+    }
+
+    .video-url-note {
+      padding: 12px 18px;
+      font-size: 11px;
+      color: #3a3a3a;
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+
+    /* iframe for real video */
+    .video-iframe {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border: none;
+      display: block;
+    }
+
+    /* ============================================================
+     RESPONSIVE BREAKPOINTS
+  ============================================================ */
+
+    /* Tablet — 640px+ */
+    @media (min-width: 640px) {
+      nav {
+        padding: 0 40px;
+        height: 60px;
+      }
+
+      .hero {
+        padding: 100px 40px 110px;
+        max-width: 720px;
+      }
+
+      .hero-wrapper::before {
+        background-size: 70px 70px;
+      }
+
+      .hero h1 {
+        font-size: clamp(48px, 7vw, 72px);
+      }
+
+      .hero p {
+        font-size: 17px;
+        max-width: 480px;
+      }
+
+      .section {
+        padding: 0 40px 100px;
+        max-width: 720px;
+      }
+
+      .card {
+        padding: 26px 26px 22px;
+      }
+
+      .card-title {
+        font-size: 22px;
+      }
+
+      .modal {
+        border-radius: 20px;
+        max-height: 82vh;
+        margin: 24px;
+      }
+
+      .modal-overlay {
+        align-items: center;
+      }
+
+      .modal-handle {
+        display: none;
+      }
+
+      .video-modal {
+        max-width: 640px;
+      }
+    }
+
+    /* Desktop — 1024px+ */
+    @media (min-width: 1024px) {
+      nav {
+        padding: 0 60px;
+        height: 64px;
+      }
+
+      .logo {
+        font-size: 14px;
+      }
+
+      .nav-link {
+        font-size: 13px;
+      }
+
+      .hero {
+        padding: 120px 60px 130px;
+        max-width: 1100px;
+      }
+
+      .hero h1 {
+        font-size: clamp(56px, 5.5vw, 88px);
+      }
+
+      .hero p {
+        font-size: 18px;
+        max-width: 520px;
+      }
+
+      .btn-primary {
+        padding: 16px 28px;
+        font-size: 13px;
+      }
+
+      .section {
+        padding: 0 60px 120px;
+        max-width: 1100px;
+      }
+
+      /* 2-column card grid on desktop */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+
+      /* Monday (leave) spans full width */
+      .cards .card:first-child {
+        grid-column: 1 / -1;
+      }
+
+      /* Sunday (rest) spans full width */
+      .cards .card:last-child {
+        grid-column: 1 / -1;
+      }
+
+      .card {
+        padding: 28px 28px 24px;
+      }
+
+      .card-title {
+        font-size: 24px;
+      }
+
+      .card-muscles {
+        font-size: 14px;
+      }
+
+      .btn-view {
+        padding: 10px 18px;
+        font-size: 12px;
+      }
+
+      /* Modal centered, narrower on large screens */
+      .modal {
+        max-width: 560px;
+        max-height: 80vh;
+        margin: 0;
+      }
+
+      .modal-overlay {
+        align-items: center;
+      }
+
+      .modal-header {
+        padding: 24px 28px 18px;
+      }
+
+      .modal-body {
+        padding: 0 28px 36px;
+      }
+
+      .modal-title {
+        font-size: 26px;
+      }
+
+      .exercise-name {
+        font-size: 15px;
+      }
+
+      .exercise-sets {
+        font-size: 13px;
+      }
+
+      .video-modal {
+        max-width: 700px;
+      }
+    }
+
+    /* Large desktop — 1280px+ */
+    @media (min-width: 1280px) {
+      .hero {
+        padding: 140px 80px 150px;
+        max-width: 1200px;
+      }
+
+      .section {
+        padding: 0 80px 140px;
+        max-width: 1200px;
+      }
+
+      nav {
+        padding: 0 80px;
+      }
+
+      .cards {
+        gap: 16px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="logo">
-    <img src="logo.png" alt="Logo" id="site-logo" style="height:32px;width:auto;display:block;border-radius:4px;" />
+  <!-- NAV -->
+  <nav>
+    <div class="logo">
+      <img src="https://placehold.co/120x32/111111/ffffff?text=YOUR+LOGO" alt="Logo" id="site-logo"
+        style="height:32px;width:auto;display:block;border-radius:4px;" />
+    </div>
+    <a href="#workout-plan" class="nav-link">Workout Plan</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero-wrapper">
+    <section class="hero">
+      <div class="hero-eyebrow">Weekly Training Program</div>
+      <h1>BUILD YOUR<br><em>STRENGTH.</em></h1>
+      <p>A structured weekly strength-training plan designed to build strength, improve movement, and develop a stronger
+        body.</p>
+      <a href="#workout-plan" class="btn-primary">
+        View Workout Plan
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12l7 7 7-7" />
+        </svg>
+      </a>
+    </section>
   </div>
-  <a href="#workout-plan" class="nav-link">Workout Plan</a>
-</nav>
 
-<!-- HERO -->
-<div class="hero-wrapper">
-<section class="hero">
-  <div class="hero-eyebrow">Weekly Training Program</div>
-  <h1>BUILD YOUR<br><em>STRENGTH.</em></h1>
-  <p>A structured weekly strength-training plan designed to build strength, improve movement, and develop a stronger body.</p>
-  <a href="#workout-plan" class="btn-primary">
-    View Workout Plan
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-  </a>
-</section>
-</div>
+  <!-- WORKOUT PLAN -->
+  <section id="workout-plan" class="section">
+    <div class="section-label">Weekly Schedule</div>
+    <div class="cards" id="cards-container"></div>
+  </section>
 
-<!-- WORKOUT PLAN -->
-<section id="workout-plan" class="section">
-  <div class="section-label">Weekly Schedule</div>
-  <div class="cards" id="cards-container"></div>
-</section>
-
-<!-- WORKOUT MODAL -->
-<div class="modal-overlay" id="workout-modal" onclick="closeWorkoutModal(event)">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-header-info">
-        <div class="modal-day-label" id="modal-day-label"></div>
-        <div class="modal-title" id="modal-title"></div>
-        <div class="modal-subtitle" id="modal-subtitle"></div>
+  <!-- WORKOUT MODAL -->
+  <div class="modal-overlay" id="workout-modal" onclick="closeWorkoutModal(event)">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <div class="modal-day-label" id="modal-day-label"></div>
+          <div class="modal-title" id="modal-title"></div>
+          <div class="modal-subtitle" id="modal-subtitle"></div>
+        </div>
+        <button class="modal-close" onclick="closeWorkoutModalDirect()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
       </div>
-      <button class="modal-close" onclick="closeWorkoutModalDirect()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
+      <div class="modal-body" id="modal-body"></div>
     </div>
-    <div class="modal-body" id="modal-body"></div>
   </div>
-</div>
 
-<!-- VIDEO MODAL -->
-<div class="video-modal-overlay" id="video-modal" onclick="closeVideoModal(event)">
-  <div class="video-modal">
-    <div class="video-modal-header">
-      <div class="video-modal-title" id="video-modal-title"></div>
-      <button class="video-close" onclick="closeVideoModalDirect()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
+  <!-- VIDEO MODAL -->
+  <div class="video-modal-overlay" id="video-modal" onclick="closeVideoModal(event)">
+    <div class="video-modal">
+      <div class="video-modal-header">
+        <div class="video-modal-title" id="video-modal-title"></div>
+        <button class="video-close" onclick="closeVideoModalDirect()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div id="video-modal-content"></div>
+      <div class="video-url-note">Replace VIDEO_URL in workoutData to add real videos</div>
     </div>
-    <div id="video-modal-content"></div>
-    <div class="video-url-note">Replace VIDEO_URL in workoutData to add real videos</div>
   </div>
-</div>
 
-<script>
-// ============================================================
-// WORKOUT DATA — edit this object to update any content
-// ============================================================
-const workoutData = [
-  {
-    day: "Monday",
-    status: "leave",
-    title: "Leave",
-    subtitle: "Rest / Personal Day"
-  },
-  {
-    day: "Tuesday",
-    title: "Pull",
-    muscles: "Back + Rear Delts + Biceps",
-    exercises: [
-      { name: "Lat Pulldown", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/i_En2drerpY?si=Xi9I72LxjmaBiQzQ" },
-      { name: "Seated Cable Row", sets: "3 × 8–12", videoUrl: "" },
-      { name: "Single-Arm Dumbbell Row", sets: "3 × 8–12 each", videoUrl: "" },
-      { name: "Face Pull / Reverse Fly", sets: "3 × 10–15", videoUrl: "" },
-      { name: "Dumbbell/Cable Biceps Curl", sets: "3 × 10–15", videoUrl: "" },
-      { name: "Hammer Curl", sets: "2–3 × 10–15", videoUrl: "" }
-    ],
-    note: "Focus: don't rush the eccentric/returning phase. Control the weight."
-  },
-  {
-    day: "Wednesday",
-    title: "Legs + Abs",
-    muscles: "Quads + Hamstrings + Glutes + Calves",
-    exercises: [
-      { name: "Back Squat / Goblet Squat", sets: "3 × 6–10", videoUrl: "" },
-      { name: "Romanian Deadlift", sets: "3 × 8–12", videoUrl: "" },
-      { name: "Leg Press", sets: "3 × 8–12", videoUrl: "" },
-      { name: "Bulgarian Split Squat", sets: "2–3 × 8–12 each", videoUrl: "" },
-      { name: "Leg Curl", sets: "3 × 10–15", videoUrl: "" },
-      { name: "Calf Raise", sets: "3 × 10–15", videoUrl: "" },
-      { name: "Crunch", sets: "3 × 10–20", videoUrl: "" }
-    ],
-    note: "Important: You don't need to make every leg exercise extremely heavy. Technique comes first."
-  },
-  {
-    day: "Thursday",
-    title: "Cardio + Mobility",
-    muscles: "Recovery-Focused Day",
-    type: "cardio",
-    cardio: {
-      label: "Cardio",
-      activity: "Incline walking — 20–30 minutes",
-      note: "Keep the intensity moderate. You should be able to speak in short sentences."
-    },
-    mobilityLabel: "Mobility — 10–15 min",
-    mobilityNote: "Mobility should be controlled, not painful.",
-    mobilityGroups: [
+  <script>
+    // ============================================================
+    // WORKOUT DATA — Updated with full exercise plan
+    // ============================================================
+    const workoutData = [
       {
-        group: "Hips",
+        day: "Monday",
+        title: "Push + Abs",
+        muscles: "Chest + Shoulders + Triceps",
         exercises: [
-          { name: "90/90 hip rotations", videoUrl: "" },
-          { name: "Hip circles", videoUrl: "" }
+          { name: "Bench Press / Dumbbell Bench Press", sets: "3 × 6–10", videoUrl: "https://youtube.com/shorts/7J7O3NqoRt8?si=95RZd4683uZgPOJs" },
+          { name: "Incline Dumbbell Press", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/V3BNe4vJX60?si=YXzNLKmY7skRMLae" },
+          { name: "Seated Dumbbell Shoulder Press", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/kzKsy-TtddE?si=Z1cEMGVwmdolWb0H" },
+          { name: "Cable/Dumbbell Lateral Raise", sets: "3 × 10–15", videoUrl: "https://youtube.com/shorts/UFcaodmbXd8?si=4R84Ik6WbKBzC71b" },
+          { name: "Triceps Pushdown", sets: "3 × 10–15", videoUrl: "https://youtube.com/shorts/IYriMllc8js?si=Y-oqz004pUTVYO3K" },
+          { name: "Overhead Triceps Extension", sets: "2–3 × 10–15", videoUrl: "https://youtube.com/shorts/QKfRhY8qvhg?si=ABDH75Ite1jGc2Zs" },
+          { name: "Plank", sets: "3 × 30–45 sec", videoUrl: "https://youtube.com/shorts/UQ78pw0WNZI?si=FqUtKiO8bnfVSOP2" }
+        ],
+        note: "Focus: controlled movement and proper technique."
+      },
+      {
+        day: "Tuesday",
+        title: "Pull",
+        muscles: "Back + Rear Delts + Biceps",
+        exercises: [
+          { name: "Lat Pulldown", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/i_En2drerpY?si=Xi9I72LxjmaBiQzQ" },
+          { name: "Seated Cable Row", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/I3Ia2y_Bh90?si=ck3uUn1dtFs6CB7q" },
+          { name: "Single-Arm Dumbbell Row", sets: "3 × 8–12 each", videoUrl: "https://youtube.com/shorts/jpi4reqwiKY?si=ZYwe_FmcGsTJlouU" },
+          { name: "Face Pull / Reverse Fly", sets: "3 × 10–15", videoUrl: "https://youtube.com/shorts/I41wK3wTZlo?si=AVFkBTmOvQ1V9cJu" },
+          { name: "Dumbbell/Cable Biceps Curl", sets: "3 × 10–15", videoUrl: "https://youtube.com/shorts/j1FjaWu5Am4?si=9a4snKR1vjvXAMqO" },
+          { name: "Hammer Curl", sets: "2–3 × 10–15", videoUrl: "https://youtube.com/shorts/8iqqhQwQRCM?si=iWNMU7KCWpPr6N5m" }
+        ],
+        note: "Focus: don't rush the eccentric/returning phase. Control the weight."
+      },
+      {
+        day: "Wednesday",
+        title: "Legs + Abs",
+        muscles: "Quads + Hamstrings + Glutes + Calves",
+        exercises: [
+          { name: "Back Squat / Goblet Squat", sets: "3 × 6–10", videoUrl: "https://youtube.com/shorts/Lq9bf_QUSns?si=9HdM3fsepvo160Qm" },
+          { name: "Romanian Deadlift", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/CBOhr6H7BEY?si=63TvxeBoMDNUYqUW" },
+          { name: "Leg Press", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/8LiyuuP1dQg?si=S_sZrjM-cJI0eOkU" },
+          { name: "Bulgarian Split Squat", sets: "2–3 × 8–12 each", videoUrl: "https://youtube.com/shorts/8k7MgnnKpCM?si=-Rtwzn7XfulP63SG" },
+          { name: "Leg Curl", sets: "3 × 10–15", videoUrl: "https://youtube.com/shorts/yjWAuFOjhuY?si=c6ltm7oFkdqwNCoc" },
+          { name: "Calf Raise", sets: "3 × 10–15", videoUrl: "https://youtube.com/shorts/lyDp3tbx3qU?si=ux7vWDwLcH9NyieA" },
+          { name: "Crunch", sets: "3 × 10–20", videoUrl: "https://youtube.com/shorts/-m_X1at8iq4?si=EWXFSw9AZFxzJR73" }
+        ],
+        note: "Important: You don't need to make every leg exercise extremely heavy. Technique comes first."
+      },
+      {
+        day: "Thursday",
+        title: "Cardio + Mobility",
+        muscles: "Recovery-Focused Day",
+        type: "cardio",
+        cardio: {
+          label: "Cardio",
+          activity: "Incline walking — 20–30 minutes",
+          note: "Keep the intensity moderate. You should be able to speak in short sentences."
+        },
+        mobilityLabel: "Mobility — 10–15 min",
+        mobilityNote: "Mobility should be controlled, not painful.",
+        mobilityGroups: [
+          { group: "Hips", exercises: [{ name: "90/90 hip rotations", videoUrl: "https://youtube.com/shorts/7lGIfjasuNo?si=h88RpOtJDv4uPRuD" }, { name: "Hip circles", videoUrl: "" }] },
+          { group: "Ankles", exercises: [{ name: "Knee-to-wall ankle mobility", videoUrl: "https://youtube.com/shorts/k0xU-Ux7C-o?si=rnRYnF-V6vxtsS2g" }] },
+          { group: "Spinal Twist", exercises: [{ name: "Thoracic rotations", videoUrl: "https://youtube.com/shorts/ElKoMMaTPCM?si=kbqstIaVmgausHX7" }] },
+          { group: "Shoulders", exercises: [{ name: "Arm circles", videoUrl: "https://youtube.com/shorts/bZhodDaUUOo?si=zXhUFxv8fCCIFjyZ" }, { name: "Shoulder rotations", videoUrl: "" }] },
+          { group: "Hamstrings", exercises: [{ name: "Dynamic hamstring stretch", videoUrl: "https://youtube.com/shorts/npWPvexvtGA?si=lwcTxKPGtCdpemYJ" }] },
+          { group: "Hip flexors", exercises: [{ name: "Half-kneeling hip-flexor stretch", videoUrl: "https://youtube.com/shorts/V01aVqxOhbU?si=ocsFkNOW87_8NrN4" }] }
         ]
       },
       {
-        group: "Ankles",
+        day: "Friday",
+        title: "Upper",
+        muscles: "Upper-body strength",
         exercises: [
-          { name: "Knee-to-wall ankle mobility", videoUrl: "" }
+          { name: "Bench Press / Chest Press", sets: "3 × 6–10", videoUrl: "https://youtube.com/shorts/7J7O3NqoRt8?si=95RZd4683uZgPOJs" },
+          { name: "Lat Pulldown / Assisted Pull-up", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/i_En2drerpY?si=Xi9I72LxjmaBiQzQ" },
+          { name: "Seated Cable Row", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/I3Ia2y_Bh90?si=ck3uUn1dtFs6CB7q" },
+          { name: "Dumbbell Shoulder Press", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/kzKsy-TtddE?si=Z1cEMGVwmdolWb0H" },
+          { name: "Lateral Raise", sets: "3 × 10–15", videoUrl: "https://youtube.com/shorts/UFcaodmbXd8?si=4R84Ik6WbKBzC71b" },
+          { name: "Biceps Curl", sets: "2–3 × 10–15", videoUrl: "https://youtube.com/shorts/j1FjaWu5Am4?si=9a4snKR1vjvXAMqO" },
+          { name: "Triceps Pushdown", sets: "2–3 × 10–15", videoUrl: "https://youtube.com/shorts/IYriMllc8js?si=Y-oqz004pUTVYO3K" }
+        ],
+        note: "This gives your upper body a second training stimulus during the week."
+      },
+      {
+        day: "Saturday",
+        title: "Lower + Abs",
+        muscles: "Glutes + Hamstrings + Quads + Calves",
+        exercises: [
+          { name: "Trap-Bar Deadlift / Deadlift", sets: "3 × 5–8", videoUrl: "https://youtube.com/shorts/Ni1owKSYJlo?si=1sTdH0uJmelJArsx" },
+          { name: "Hip Thrust", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/_i6qpcI1Nw4?si=ysqHjZtIR7Wgwp8k" },
+          { name: "Front Squat / Goblet Squat", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/7-80HiXX1K8?si=wCupQL8WSHV5lueF" },
+          { name: "Walking Lunges", sets: "2–3 × 8–12 each", videoUrl: "https://youtube.com/shorts/QY39Yt_-wnY?si=KH-w4IcrvIl9kSDk" },
+          { name: "Leg Curl", sets: "3 × 10–15", videoUrl: "https://youtube.com/shorts/yjWAuFOjhuY?si=rV0tOfrqG0PxEq0F" },
+          { name: "Calf Raise", sets: "3 × 10–15", videoUrl: "https://youtube.com/shorts/lyDp3tbx3qU?si=ux7vWDwLcH9NyieA" },
+          { name: "Hanging Knee Raise", sets: "3 × 10–15", videoUrl: "https://youtube.com/shorts/KO8Y__OBEY4?si=RFgDVqsBA7gWYxQt" }
         ]
       },
       {
-        group: "Thoracic spine",
-        exercises: [
-          { name: "Thoracic rotations", videoUrl: "" }
-        ]
-      },
-      {
-        group: "Shoulders",
-        exercises: [
-          { name: "Arm circles", videoUrl: "" },
-          { name: "Shoulder rotations", videoUrl: "" }
-        ]
-      },
-      {
-        group: "Hamstrings",
-        exercises: [
-          { name: "Dynamic hamstring stretch", videoUrl: "" }
-        ]
-      },
-      {
-        group: "Hip flexors",
-        exercises: [
-          { name: "Half-kneeling hip-flexor stretch", videoUrl: "" }
+        day: "Sunday",
+        status: "rest",
+        title: "Complete Rest",
+        subtitle: "No heavy training.",
+        restItems: [
+          "Walk casually",
+          "Do light stretching",
+          "Recover",
+          "Sleep properly",
+          "Prepare for the next week"
         ]
       }
-    ]
-  },
-  {
-    day: "Friday",
-    title: "Upper",
-    muscles: "Upper-body strength",
-    exercises: [
-      { name: "Bench Press / Chest Press", sets: "3 × 6–10", videoUrl: "" },
-      { name: "Lat Pulldown / Assisted Pull-up", sets: "3 × 8–12", videoUrl: "" },
-      { name: "Seated Cable Row", sets: "3 × 8–12", videoUrl: "" },
-      { name: "Dumbbell Shoulder Press", sets: "3 × 8–12", videoUrl: "" },
-      { name: "Lateral Raise", sets: "3 × 10–15", videoUrl: "" },
-      { name: "Biceps Curl", sets: "2–3 × 10–15", videoUrl: "" },
-      { name: "Triceps Pushdown", sets: "2–3 × 10–15", videoUrl: "" }
-    ],
-    note: "This gives your upper body a second training stimulus during the week."
-  },
-  {
-    day: "Saturday",
-    title: "Lower + Abs",
-    muscles: "Glutes + Hamstrings + Quads + Calves",
-    exercises: [
-      { name: "Trap-Bar Deadlift / Deadlift", sets: "3 × 5–8", videoUrl: "" },
-      { name: "Hip Thrust", sets: "3 × 8–12", videoUrl: "" },
-      { name: "Front Squat / Goblet Squat", sets: "3 × 8–12", videoUrl: "" },
-      { name: "Walking Lunges", sets: "2–3 × 8–12 each", videoUrl: "" },
-      { name: "Leg Curl", sets: "3 × 10–15", videoUrl: "" },
-      { name: "Calf Raise", sets: "3 × 10–15", videoUrl: "" },
-      { name: "Hanging Knee Raise", sets: "3 × 10–15", videoUrl: "" }
-    ]
-  },
-  {
-    day: "Sunday",
-    status: "rest",
-    title: "Complete Rest",
-    subtitle: "No heavy training. Focus on recovery and prepare for the next week.",
-    restItems: [
-      "Walk casually",
-      "Do light stretching",
-      "Recover",
-      "Sleep properly",
-      "Prepare for the next week"
-    ]
-  }
-];
+    ];
 
-// ============================================================
-// RENDER CARDS
-// ============================================================
-function renderCards() {
-  const container = document.getElementById('cards-container');
-  workoutData.forEach((day, idx) => {
-    const card = document.createElement('div');
+    // ============================================================
+    // RENDER CARDS
+    // ============================================================
+    function renderCards() {
+      const container = document.getElementById('cards-container');
+      workoutData.forEach((day, idx) => {
+        const card = document.createElement('div');
 
-    if (day.status === 'leave') {
-      card.className = 'card card-leave';
-      card.innerHTML = `
+        if (day.status === 'leave') {
+          card.className = 'card card-leave';
+          card.innerHTML = `
         <div class="card-day">${day.day}</div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
           <div class="card-title">${day.title}</div>
@@ -1006,9 +1117,9 @@ function renderCards() {
         </div>
         <div class="card-muscles" style="margin-top:6px;margin-bottom:0;">Rest / Personal Day</div>
       `;
-    } else if (day.status === 'rest') {
-      card.className = 'card card-rest';
-      card.innerHTML = `
+        } else if (day.status === 'rest') {
+          card.className = 'card card-rest';
+          card.innerHTML = `
         <div class="card-day">${day.day}</div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
           <div class="card-title">${day.title}</div>
@@ -1016,9 +1127,9 @@ function renderCards() {
         </div>
         <div class="card-muscles" style="margin-top:6px;margin-bottom:0;">${day.subtitle}</div>
       `;
-    } else {
-      card.className = 'card clickable';
-      card.innerHTML = `
+        } else {
+          card.className = 'card clickable';
+          card.innerHTML = `
         <div class="card-day">${day.day}</div>
         <div class="card-title">${day.title}</div>
         <div class="card-muscles">${day.muscles}</div>
@@ -1028,98 +1139,98 @@ function renderCards() {
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       `;
-      card.addEventListener('click', (e) => {
-        if (!e.target.closest('.btn-view')) openWorkout(idx);
+          card.addEventListener('click', (e) => {
+            if (!e.target.closest('.btn-view')) openWorkout(idx);
+          });
+        }
+        container.appendChild(card);
       });
     }
-    container.appendChild(card);
-  });
-}
 
-// ============================================================
-// WORKOUT MODAL
-// ============================================================
-function openWorkout(idx) {
-  const day = workoutData[idx];
-  document.getElementById('modal-day-label').textContent = day.day;
-  document.getElementById('modal-title').textContent = day.title;
-  document.getElementById('modal-subtitle').textContent = day.muscles || day.subtitle || '';
+    // ============================================================
+    // WORKOUT MODAL
+    // ============================================================
+    function openWorkout(idx) {
+      const day = workoutData[idx];
+      document.getElementById('modal-day-label').textContent = day.day;
+      document.getElementById('modal-title').textContent = day.title;
+      document.getElementById('modal-subtitle').textContent = day.muscles || day.subtitle || '';
 
-  const body = document.getElementById('modal-body');
-  body.innerHTML = '';
+      const body = document.getElementById('modal-body');
+      body.innerHTML = '';
 
-  if (day.status === 'rest') {
-    // Sunday
-    const ul = document.createElement('ul');
-    ul.className = 'rest-list';
-    ul.style.marginTop = '16px';
-    day.restItems.forEach(item => {
-      const li = document.createElement('li');
-      li.textContent = item;
-      ul.appendChild(li);
-    });
-    body.appendChild(ul);
-    return;
-  }
+      if (day.status === 'rest') {
+        // Sunday
+        const ul = document.createElement('ul');
+        ul.className = 'rest-list';
+        ul.style.marginTop = '16px';
+        day.restItems.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          ul.appendChild(li);
+        });
+        body.appendChild(ul);
+        return;
+      }
 
-  if (day.type === 'cardio') {
-    // Thursday
-    const cardioHead = document.createElement('div');
-    cardioHead.className = 'modal-section-head';
-    cardioHead.textContent = day.cardio.label;
-    body.appendChild(cardioHead);
+      if (day.type === 'cardio') {
+        // Thursday
+        const cardioHead = document.createElement('div');
+        cardioHead.className = 'modal-section-head';
+        cardioHead.textContent = day.cardio.label;
+        body.appendChild(cardioHead);
 
-    const cardioBlock = document.createElement('div');
-    cardioBlock.className = 'info-block';
-    cardioBlock.innerHTML = `
+        const cardioBlock = document.createElement('div');
+        cardioBlock.className = 'info-block';
+        cardioBlock.innerHTML = `
       <div class="info-block-title">${day.cardio.activity}</div>
       <div class="info-block-sub">${day.cardio.note}</div>
     `;
-    body.appendChild(cardioBlock);
+        body.appendChild(cardioBlock);
 
-    const mobilityHead = document.createElement('div');
-    mobilityHead.className = 'modal-section-head';
-    mobilityHead.style.marginTop = '8px';
-    mobilityHead.textContent = day.mobilityLabel;
-    body.appendChild(mobilityHead);
+        const mobilityHead = document.createElement('div');
+        mobilityHead.className = 'modal-section-head';
+        mobilityHead.style.marginTop = '8px';
+        mobilityHead.textContent = day.mobilityLabel;
+        body.appendChild(mobilityHead);
 
-    day.mobilityGroups.forEach(group => {
-      const g = document.createElement('div');
-      g.className = 'mobility-group';
-      g.innerHTML = `<div class="mobility-group-name">${group.group}</div>`;
-      group.exercises.forEach(ex => {
-        const row = document.createElement('div');
-        row.className = 'mobility-item';
-        row.innerHTML = `
+        day.mobilityGroups.forEach(group => {
+          const g = document.createElement('div');
+          g.className = 'mobility-group';
+          g.innerHTML = `<div class="mobility-group-name">${group.group}</div>`;
+          group.exercises.forEach(ex => {
+            const row = document.createElement('div');
+            row.className = 'mobility-item';
+            row.innerHTML = `
           <span class="mobility-item-name">${ex.name}</span>
           <button class="btn-video" onclick="openVideo('${escapeQuotes(ex.name)}', '${ex.videoUrl}')">
             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             Demo
           </button>
         `;
-        g.appendChild(row);
-      });
-      body.appendChild(g);
-    });
+            g.appendChild(row);
+          });
+          body.appendChild(g);
+        });
 
-    const note = document.createElement('div');
-    note.className = 'focus-note';
-    note.style.marginTop = '16px';
-    note.innerHTML = `<strong>Note:</strong> ${day.mobilityNote}`;
-    body.appendChild(note);
-    return;
-  }
+        const note = document.createElement('div');
+        note.className = 'focus-note';
+        note.style.marginTop = '16px';
+        note.innerHTML = `<strong>Note:</strong> ${day.mobilityNote}`;
+        body.appendChild(note);
+        return;
+      }
 
-  // Normal workout days
-  const exHead = document.createElement('div');
-  exHead.className = 'modal-section-head';
-  exHead.textContent = 'Exercises';
-  body.appendChild(exHead);
+      // Normal workout days
+      const exHead = document.createElement('div');
+      exHead.className = 'modal-section-head';
+      exHead.textContent = 'Exercises';
+      body.appendChild(exHead);
 
-  day.exercises.forEach(ex => {
-    const row = document.createElement('div');
-    row.className = 'exercise-row';
-    row.innerHTML = `
+      day.exercises.forEach(ex => {
+        const row = document.createElement('div');
+        row.className = 'exercise-row';
+        row.innerHTML = `
       <div class="exercise-info">
         <div class="exercise-name">${ex.name}</div>
         <div class="exercise-sets">${ex.sets}</div>
@@ -1129,103 +1240,103 @@ function openWorkout(idx) {
         Demo Video
       </button>
     `;
-    body.appendChild(row);
-  });
+        body.appendChild(row);
+      });
 
-  if (day.note) {
-    const note = document.createElement('div');
-    note.className = 'focus-note';
-    note.innerHTML = `<strong>Note:</strong> ${day.note}`;
-    body.appendChild(note);
-  }
+      if (day.note) {
+        const note = document.createElement('div');
+        note.className = 'focus-note';
+        note.innerHTML = `<strong>Note:</strong> ${day.note}`;
+        body.appendChild(note);
+      }
 
-  const modal = document.getElementById('workout-modal');
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
+      const modal = document.getElementById('workout-modal');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
 
-function openWorkout(idx) {
-  const day = workoutData[idx];
-  document.getElementById('modal-day-label').textContent = day.day;
-  document.getElementById('modal-title').textContent = day.title;
-  document.getElementById('modal-subtitle').textContent = day.muscles || day.subtitle || '';
+    function openWorkout(idx) {
+      const day = workoutData[idx];
+      document.getElementById('modal-day-label').textContent = day.day;
+      document.getElementById('modal-title').textContent = day.title;
+      document.getElementById('modal-subtitle').textContent = day.muscles || day.subtitle || '';
 
-  const body = document.getElementById('modal-body');
-  body.innerHTML = '';
-  buildModalBody(body, day);
+      const body = document.getElementById('modal-body');
+      body.innerHTML = '';
+      buildModalBody(body, day);
 
-  const modal = document.getElementById('workout-modal');
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
+      const modal = document.getElementById('workout-modal');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
 
-function buildModalBody(body, day) {
-  if (day.status === 'rest') {
-    const ul = document.createElement('ul');
-    ul.className = 'rest-list';
-    ul.style.marginTop = '16px';
-    day.restItems.forEach(item => {
-      const li = document.createElement('li');
-      li.textContent = item;
-      ul.appendChild(li);
-    });
-    body.appendChild(ul);
-    return;
-  }
+    function buildModalBody(body, day) {
+      if (day.status === 'rest') {
+        const ul = document.createElement('ul');
+        ul.className = 'rest-list';
+        ul.style.marginTop = '16px';
+        day.restItems.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          ul.appendChild(li);
+        });
+        body.appendChild(ul);
+        return;
+      }
 
-  if (day.type === 'cardio') {
-    const cardioHead = document.createElement('div');
-    cardioHead.className = 'modal-section-head';
-    cardioHead.textContent = day.cardio.label;
-    body.appendChild(cardioHead);
+      if (day.type === 'cardio') {
+        const cardioHead = document.createElement('div');
+        cardioHead.className = 'modal-section-head';
+        cardioHead.textContent = day.cardio.label;
+        body.appendChild(cardioHead);
 
-    const cardioBlock = document.createElement('div');
-    cardioBlock.className = 'info-block';
-    cardioBlock.innerHTML = `<div class="info-block-title">${day.cardio.activity}</div><div class="info-block-sub">${day.cardio.note}</div>`;
-    body.appendChild(cardioBlock);
+        const cardioBlock = document.createElement('div');
+        cardioBlock.className = 'info-block';
+        cardioBlock.innerHTML = `<div class="info-block-title">${day.cardio.activity}</div><div class="info-block-sub">${day.cardio.note}</div>`;
+        body.appendChild(cardioBlock);
 
-    const mobilityHead = document.createElement('div');
-    mobilityHead.className = 'modal-section-head';
-    mobilityHead.style.marginTop = '8px';
-    mobilityHead.textContent = day.mobilityLabel;
-    body.appendChild(mobilityHead);
+        const mobilityHead = document.createElement('div');
+        mobilityHead.className = 'modal-section-head';
+        mobilityHead.style.marginTop = '8px';
+        mobilityHead.textContent = day.mobilityLabel;
+        body.appendChild(mobilityHead);
 
-    day.mobilityGroups.forEach(group => {
-      const g = document.createElement('div');
-      g.className = 'mobility-group';
-      g.innerHTML = `<div class="mobility-group-name">${group.group}</div>`;
-      group.exercises.forEach(ex => {
-        const row = document.createElement('div');
-        row.className = 'mobility-item';
-        row.innerHTML = `
+        day.mobilityGroups.forEach(group => {
+          const g = document.createElement('div');
+          g.className = 'mobility-group';
+          g.innerHTML = `<div class="mobility-group-name">${group.group}</div>`;
+          group.exercises.forEach(ex => {
+            const row = document.createElement('div');
+            row.className = 'mobility-item';
+            row.innerHTML = `
           <span class="mobility-item-name">${ex.name}</span>
           <button class="btn-video" onclick="openVideo('${escapeQuotes(ex.name)}', '${ex.videoUrl}')">
             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             Demo
           </button>`;
-        g.appendChild(row);
-      });
-      body.appendChild(g);
-    });
+            g.appendChild(row);
+          });
+          body.appendChild(g);
+        });
 
-    const note = document.createElement('div');
-    note.className = 'focus-note';
-    note.style.marginTop = '16px';
-    note.innerHTML = `<strong>Note:</strong> ${day.mobilityNote}`;
-    body.appendChild(note);
-    return;
-  }
+        const note = document.createElement('div');
+        note.className = 'focus-note';
+        note.style.marginTop = '16px';
+        note.innerHTML = `<strong>Note:</strong> ${day.mobilityNote}`;
+        body.appendChild(note);
+        return;
+      }
 
-  // Standard strength day
-  const exHead = document.createElement('div');
-  exHead.className = 'modal-section-head';
-  exHead.textContent = 'Exercises';
-  body.appendChild(exHead);
+      // Standard strength day
+      const exHead = document.createElement('div');
+      exHead.className = 'modal-section-head';
+      exHead.textContent = 'Exercises';
+      body.appendChild(exHead);
 
-  day.exercises.forEach(ex => {
-    const row = document.createElement('div');
-    row.className = 'exercise-row';
-    row.innerHTML = `
+      day.exercises.forEach(ex => {
+        const row = document.createElement('div');
+        row.className = 'exercise-row';
+        row.innerHTML = `
       <div class="exercise-info">
         <div class="exercise-name">${ex.name}</div>
         <div class="exercise-sets">${ex.sets}</div>
@@ -1234,75 +1345,76 @@ function buildModalBody(body, day) {
         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         Demo Video
       </button>`;
-    body.appendChild(row);
-  });
+        body.appendChild(row);
+      });
 
-  if (day.note) {
-    const note = document.createElement('div');
-    note.className = 'focus-note';
-    note.innerHTML = `<strong>Note:</strong> ${day.note}`;
-    body.appendChild(note);
-  }
-}
+      if (day.note) {
+        const note = document.createElement('div');
+        note.className = 'focus-note';
+        note.innerHTML = `<strong>Note:</strong> ${day.note}`;
+        body.appendChild(note);
+      }
+    }
 
-function closeWorkoutModal(e) {
-  if (e.target === document.getElementById('workout-modal')) closeWorkoutModalDirect();
-}
+    function closeWorkoutModal(e) {
+      if (e.target === document.getElementById('workout-modal')) closeWorkoutModalDirect();
+    }
 
-function closeWorkoutModalDirect() {
-  document.getElementById('workout-modal').classList.remove('open');
-  document.body.style.overflow = '';
-}
+    function closeWorkoutModalDirect() {
+      document.getElementById('workout-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
 
-// ============================================================
-// VIDEO MODAL
-// ============================================================
-function escapeQuotes(str) {
-  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-}
+    // ============================================================
+    // VIDEO MODAL
+    // ============================================================
+    function escapeQuotes(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
 
-function openVideo(name, url) {
-  document.getElementById('video-modal-title').textContent = name;
-  const content = document.getElementById('video-modal-content');
+    function openVideo(name, url) {
+      document.getElementById('video-modal-title').textContent = name;
+      const content = document.getElementById('video-modal-content');
 
-  if (url && url.trim() !== '') {
-    // Convert YouTube watch URL to embed URL if needed
-    let embedUrl = url;
-    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^&\s?]+)/);
-    if (ytMatch) embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
-    content.innerHTML = `<iframe class="video-iframe" src="${embedUrl}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
-  } else {
-    content.innerHTML = `
+      if (url && url.trim() !== '') {
+        // Convert YouTube watch URL to embed URL if needed
+        let embedUrl = url;
+        const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^&\s?]+)/);
+        if (ytMatch) embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+        content.innerHTML = `<iframe class="video-iframe" src="${embedUrl}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+      } else {
+        content.innerHTML = `
       <div class="video-placeholder">
         <div class="video-placeholder-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         </div>
         <p>Video placeholder — add a URL to <code style="color:var(--accent);font-size:10px;">videoUrl</code> in workoutData</p>
       </div>`;
-  }
+      }
 
-  document.getElementById('video-modal').classList.add('open');
-}
+      document.getElementById('video-modal').classList.add('open');
+    }
 
-function closeVideoModal(e) {
-  if (e.target === document.getElementById('video-modal')) closeVideoModalDirect();
-}
+    function closeVideoModal(e) {
+      if (e.target === document.getElementById('video-modal')) closeVideoModalDirect();
+    }
 
-function closeVideoModalDirect() {
-  document.getElementById('video-modal').classList.remove('open');
-  document.getElementById('video-modal-content').innerHTML = '';
-}
+    function closeVideoModalDirect() {
+      document.getElementById('video-modal').classList.remove('open');
+      document.getElementById('video-modal-content').innerHTML = '';
+    }
 
-// Keyboard close
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeVideoModalDirect();
-    closeWorkoutModalDirect();
-  }
-});
+    // Keyboard close
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        closeVideoModalDirect();
+        closeWorkoutModalDirect();
+      }
+    });
 
-// Init
-renderCards();
-</script>
+    // Init
+    renderCards();
+  </script>
 </body>
+
 </html>
