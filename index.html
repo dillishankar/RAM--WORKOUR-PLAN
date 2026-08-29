@@ -867,7 +867,7 @@ const workoutData = [
     title: "Pull",
     muscles: "Back + Rear Delts + Biceps",
     exercises: [
-      { name: "Lat Pulldown", sets: "3 × 8–12", videoUrl: "" },
+      { name: "Lat Pulldown", sets: "3 × 8–12", videoUrl: "https://youtube.com/shorts/i_En2drerpY?si=Xi9I72LxjmaBiQzQ" },
       { name: "Seated Cable Row", sets: "3 × 8–12", videoUrl: "" },
       { name: "Single-Arm Dumbbell Row", sets: "3 × 8–12 each", videoUrl: "" },
       { name: "Face Pull / Reverse Fly", sets: "3 × 10–15", videoUrl: "" },
@@ -1268,7 +1268,7 @@ function openVideo(name, url) {
   if (url && url.trim() !== '') {
     // Convert YouTube watch URL to embed URL if needed
     let embedUrl = url;
-    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^&\s?]+)/);
     if (ytMatch) embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
     content.innerHTML = `<iframe class="video-iframe" src="${embedUrl}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
   } else {
